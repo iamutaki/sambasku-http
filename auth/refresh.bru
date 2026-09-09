@@ -1,0 +1,29 @@
+meta {
+  name: Refresh Token
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/v1/auth/refresh
+  body: none
+  auth: none
+}
+
+headers {
+  Cookie: refresh_token={{refresh_token}}
+}
+
+script:post-response {
+  // Rotasi: simpan cookie baru hasil refresh
+  const raw = res.headers['set-cookie'];
+  const setCookies = Array.isArray(raw) ? raw : raw ? [raw] : [];
+  const m = setCookies.join(';').match(/refresh_token=([^;]+)/);
+  if (m) bru.setVar('refresh_token', m[1]);
+}
+
+tests {
+  test("status 200 + access_token baru", () => {
+    expect(res.status).to.equal(200);
+    expect(res.body.data.access_token).to.be.a('string');
+  });
+}

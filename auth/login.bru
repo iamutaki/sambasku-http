@@ -1,0 +1,39 @@
+meta {
+  name: Login
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/v1/auth/login
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "email": "{{admin_email}}",
+    "password": "{{admin_password}}"
+  }
+}
+
+vars:post-response {
+  access_token: res.body.data.access_token
+}
+
+script:post-response {
+  // Simpan refresh_token dari cookie httpOnly untuk request refresh/logout.
+  // res.headers di Bruno adalah plain object (bukan Headers fetch API).
+  const raw = res.headers['set-cookie'];
+  const setCookies = Array.isArray(raw) ? raw : raw ? [raw] : [];
+  const m = setCookies.join(';').match(/refresh_token=([^;]+)/);
+  bru.setVar('refresh_token', m ? m[1] : '');
+}
+
+tests {
+  test("status 200 + access_token + user", () => {
+    expect(res.status).to.equal(200);
+    expect(res.body.data.access_token).to.be.a('string');
+    expect(res.body.data.expires_in).to.equal(900);
+    expect(res.body.data.user.role).to.equal('admin');
+  });
+}
