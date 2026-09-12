@@ -1,0 +1,34 @@
+meta {
+  name: Login Mobile
+  seq: 8
+}
+
+post {
+  url: {{baseUrl}}/api/v1/auth/login
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "email": "{{admin_email}}",
+    "password": "{{admin_password}}",
+    "client_type": "mobile"
+  }
+}
+
+vars:post-response {
+  mobile_refresh_token: res.body.data.refresh_token
+}
+
+tests {
+  test("mobile: refresh_token di body, TANPA Set-Cookie", () => {
+    expect(res.status).to.equal(200);
+    expect(res.body.data.refresh_token).to.be.a('string');
+    expect(res.body.data.access_token).to.exist;
+    // res.headers di Bruno plain object — set-cookie bisa string/array
+    const raw = res.headers['set-cookie'];
+    const setCookies = Array.isArray(raw) ? raw : raw ? [raw] : [];
+    expect(setCookies.length).to.equal(0);
+  });
+}

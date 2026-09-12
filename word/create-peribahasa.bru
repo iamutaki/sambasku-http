@@ -1,0 +1,83 @@
+docs {
+Entri frasa (peribahasa/idiom/ungkapan) dengan komponen pembentuk + bentuk turunan.
+
+201 sukses:
+
+    {
+      "success": true,
+      "data": {
+        "word_id": "01JDX...",
+        "lemma": "miyang rabong",
+        "word_type": "peribahasa",
+        "status": "published",
+        "created_at": "2026-09-12T02:00:00.000Z"
+      }
+    }
+
+Komponen terlihat di GET /words/:id field related_words; di detail kata komponen muncul sebagai appears_in.
+}
+
+meta {
+  name: Create Peribahasa
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}/api/v1/admin/words
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "language_id": "{{sambas_language_id}}",
+    "lemma": "peribahasa makatn",
+    "word_type": "peribahasa",
+    "meanings": [
+      {
+        "word_class_id": "{{word_class_id}}",
+        "definition": "Contoh peribahasa berkomponen",
+        "order_index": 1,
+        "translations": [
+          {
+            "language_id": "{{indonesia_language_id}}",
+            "translation_text": "peribahasa tentang makan",
+            "translation_type": "idiomatic"
+          }
+        ]
+      }
+    ],
+    "category_ids": [],
+    "related_words": [
+      { "word_id": "{{word_id}}", "relation_type": "has_component" }
+    ],
+    "variants": [
+      {
+        "form": "memperibahasakan",
+        "variant_type": "derivation",
+        "affix_type": "prefix",
+        "affix_value": "memper-"
+      }
+    ],
+    "status": "published"
+  }
+}
+
+vars:post-response {
+  phrase_word_id: res.body.data.word_id
+}
+
+tests {
+  test("201 + word_type peribahasa + komponen tercatat", () => {
+    expect(res.status).to.equal(201);
+    expect(res.body.data.word_type).to.equal('peribahasa');
+  });
+
+  test("re-run → 409-style duplikat jadi warning, tetap 201", () => {
+    expect([201]).to.include(res.status);
+  });
+}

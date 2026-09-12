@@ -1,0 +1,31 @@
+meta {
+  name: Refresh Mobile
+  seq: 9
+}
+
+post {
+  url: {{baseUrl}}/api/v1/auth/refresh
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "refresh_token": "{{mobile_refresh_token}}"
+  }
+}
+
+script:post-response {
+  // Rotasi: simpan token baru hasil refresh (kanal body)
+  if (res.body.data.refresh_token) {
+    bru.setVar('mobile_refresh_token', res.body.data.refresh_token);
+  }
+}
+
+tests {
+  test("mobile: refresh via body → token baru di body (rotasi)", () => {
+    expect(res.status).to.equal(200);
+    expect(res.body.data.access_token).to.exist;
+    expect(res.body.data.refresh_token).to.be.a('string');
+  });
+}

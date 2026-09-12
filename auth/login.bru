@@ -1,3 +1,24 @@
+docs {
+Login admin (web). Response menyimpan access_token + refresh_token (dari Set-Cookie) sebagai variable koleksi.
+
+200 sukses (web):
+
+    {
+      "success": true,
+      "data": {
+        "access_token": "eyJhbGciOiJSUzI1NiJ9...",
+        "expires_in": 900,
+        "user": { "id": "01JD...", "username": "admin", "role": "admin" }
+      }
+    }
+
+Set-Cookie: refresh_token=8f3a...; HttpOnly; Path=/api/v1/auth; SameSite=Strict
+
+401 gagal (generik, anti-enumeration):
+
+    { "success": false, "error_code": "INVALID_CREDENTIALS", "message": "Email atau password salah", "details": null }
+}
+
 meta {
   name: Login
   seq: 2

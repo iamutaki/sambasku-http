@@ -1,0 +1,18 @@
+meta {
+  name: List Dialects
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/v1/dialects?language_id={{sambas_language_id}}
+  body: none
+  auth: none
+}
+
+tests {
+  test("status 200 + dialek Umum tersedia", () => {
+    expect(res.status).to.equal(200);
+    const names = res.body.data.map((d) => d.name);
+    expect(names).to.include('Umum');
+  });
+}

@@ -1,0 +1,45 @@
+docs {
+Daftar bahasa (dropdown form admin).
+
+200 sukses:
+
+    {
+      "success": true,
+      "data": [
+        { "id": "01JD9K...", "code": "SBS", "name": "Sambas", "native_name": "Sambas", "is_active": true },
+        { "id": "01JD9K...", "code": "IDN", "name": "Indonesia", "native_name": "Bahasa Indonesia", "is_active": true }
+      ]
+    }
+}
+
+meta {
+  name: List Languages
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/v1/languages
+  body: none
+  auth: none
+}
+
+query {
+  is_active: true
+}
+
+script:post-response {
+  // Simpan id bahasa untuk request modul word (create-word.bru)
+  const sbs = res.body.data.find((l) => l.code === 'SBS');
+  const idn = res.body.data.find((l) => l.code === 'IDN');
+  bru.setVar('sambas_language_id', sbs ? sbs.id : '');
+  bru.setVar('indonesia_language_id', idn ? idn.id : '');
+}
+
+tests {
+  test("status 200 + minimal bahasa Sambas & Indonesia", () => {
+    expect(res.status).to.equal(200);
+    const codes = res.body.data.map((l) => l.code);
+    expect(codes).to.include('SBS');
+    expect(codes).to.include('IDN');
+  });
+}

@@ -1,0 +1,104 @@
+docs {
+Tambah kata lengkap (transaksional). Rate limit 30 req/menit per user.
+
+201 sukses:
+
+    {
+      "success": true,
+      "data": {
+        "word_id": "01JDW6XK2Q...",
+        "lemma": "makatn",
+        "word_type": "word",
+        "status": "published",
+        "created_at": "2026-09-12T02:00:00.000Z"
+      }
+    }
+
+warnings hanya muncul kalau lemma serupa sudah ada di bahasa yang sama (non-blokir). Contributor + status published menghasilkan "pending_review".
+}
+
+meta {
+  name: Create Word
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/v1/admin/words
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "language_id": "{{sambas_language_id}}",
+    "lemma": "makatn",
+    "notes": "Ditambahkan via koleksi Bruno",
+    "meanings": [
+      {
+        "word_class_id": "{{word_class_id}}",
+        "definition": "Aktivitas memasukkan makanan ke mulut",
+        "order_index": 1,
+        "translations": [
+          {
+            "language_id": "{{indonesia_language_id}}",
+            "translation_text": "makan",
+            "translation_type": "direct"
+          }
+        ],
+        "examples": [
+          {
+            "source_language_id": "{{sambas_language_id}}",
+            "source_sentence": "Kami udah makatn tadi.",
+            "target_language_id": "{{indonesia_language_id}}",
+            "target_sentence": "Kami sudah makan tadi.",
+            "source_type": "native_speaker"
+          }
+        ]
+      }
+    ],
+    "word_type": "word",
+    "category_ids": [],
+    "related_words": [],
+    "pronunciation": {
+      "notation": "ipa",
+      "value": "/makatn/"
+    },
+    "images": [
+      {
+        "url": "https://ik.imagekit.io/dev/words/makatn.jpg",
+        "provider_file_id": "{{bruno_file_id}}",
+        "alt_text": "Ilustrasi makatn",
+        "is_primary": true
+      }
+    ],
+    "status": "published"
+  }
+}
+
+script:pre-request {
+  // file id unik per run — hindari tabrakan unique (provider, provider_file_id) saat re-run
+  bru.setVar('bruno_file_id', 'bruno-' + Date.now());
+}
+
+vars:post-response {
+  word_id: res.body.data.word_id
+}
+
+tests {
+  test("201 + status published (admin langsung tayang)", () => {
+    expect(res.status).to.equal(201);
+    expect(res.body.data.status).to.equal('published');
+    expect(res.body.data.word_type).to.equal('word');
+    expect(res.body.data.word_id).to.have.lengthOf(26);
+  });
+
+  test("re-run → tetap 201 + warnings duplikat", () => {
+    if (res.body.data.warnings) {
+      expect(res.body.data.warnings[0].field).to.equal('lemma');
+    }
+  });
+}

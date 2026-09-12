@@ -19,11 +19,36 @@ cd http
 bruno run --env local auth/          # jalankan folder auth
 ```
 
+## Melihat Sample Response
+
+Request-request kunci (login, create-word, get-word-detail, search,
+create-peribahasa, audit-logs, languages) punya blok `docs { }` berisi
+markdown + contoh JSON response — buka request di Bruno GUI lalu pilih
+tab **Docs** di panel kanan untuk melihat bentuk responsenya tanpa
+menjalankan request.
+
 ## Struktur
 
 ```text
 auth/                  # 7 endpoint modul auth (urut sesuai seq)
+language/              # GET languages + dialects (menyimpan var sambas_language_id dst.)
+category/              # GET categories
+word/                  # POST admin/words, GET :id, search, word-classes
+audit/                 # GET admin/audit-logs (admin & root)
 environments/local.bru # baseUrl + kredensial dev (NON-secret saja)
+```
+
+### Menjalankan seluruh koleksi (variable berantai antar folder)
+
+WAJIB satu invocation — `bru.setVar` hanya hidup dalam satu proses,
+invocation terpisah tidak berbagi variable:
+
+```bash
+cd http
+npx @usebruno/cli run --env local auth/ language/ word/ category/ audit/
+# urutan folder = urutan dependensi: login → var access_token;
+# languages → var sambas_language_id/indonesia_language_id; word memakai keduanya;
+# audit membaca jejak yang ditulis auth + word
 ```
 
 ## Aturan sinkronisasi (WAJIB)

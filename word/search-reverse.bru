@@ -1,0 +1,39 @@
+docs {
+Pencarian Indonesia ke Sambas (search_in=translation) — cari kata Sambas dari terjemahannya. Item punya matched_translation.
+
+200 sukses:
+
+    {
+      "success": true,
+      "data": [
+        { "id": "01JD...", "lemma": "makatn", "language_id": "01JD...", "language_code": "SBS", "word_type": "word", "status": "published", "matched_translation": "makan" }
+      ],
+      "meta": { "limit": 20, "next_cursor": null, "has_more": false }
+    }
+}
+
+meta {
+  name: Search Reverse
+  seq: 5
+}
+
+get {
+  url: {{baseUrl}}/api/v1/words/search?q=makan&search_in=translation&translation_language_id={{indonesia_language_id}}
+  body: none
+  auth: none
+}
+
+tests {
+  test("Indonesia→Sambas: cari 'makan' menemukan kata Sambas makatn", () => {
+    expect(res.status).to.equal(200);
+    expect(res.body.data.length).to.be.at.least(1);
+    const hit = res.body.data.find((w) => w.lemma === 'makatn');
+    expect(hit).to.exist;
+    expect(hit.matched_translation).to.equal('makan');
+  });
+
+  test("meta cursor-based tetap berlaku", () => {
+    expect(res.body.meta).to.have.property('has_more');
+    expect(res.body.meta).to.have.property('next_cursor');
+  });
+}

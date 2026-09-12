@@ -1,0 +1,64 @@
+docs {
+Jejak audit mutasi data — hanya admin & root. Urut terbaru dulu, cursor-based.
+
+200 sukses:
+
+    {
+      "success": true,
+      "data": [
+        {
+          "id": "01JDX...",
+          "user_id": "01JD...",
+          "action": "create",
+          "entity_type": "word",
+          "entity_id": "01JD...",
+          "old_data": null,
+          "new_data": { "lemma": "makatn", "word_type": "word", "status": "published" },
+          "request_id": "a1b2c3d4-...",
+          "created_at": "2026-09-12T02:00:00.000Z"
+        }
+      ],
+      "meta": { "limit": 10, "next_cursor": null, "has_more": false }
+    }
+
+Filter: user_id, entity_type, entity_id, from, to (kombinasi AND).
+}
+
+meta {
+  name: List Audit Logs
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/v1/admin/audit-logs?limit=10
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+tests {
+  test("status 200 + envelope list + meta cursor-based (Section 13)", () => {
+    expect(res.status).to.equal(200);
+    expect(res.body.success).to.equal(true);
+    expect(res.body.data).to.be.an('array');
+    expect(res.body.meta.limit).to.equal(10);
+    expect(res.body.meta).to.have.property('has_more');
+    const nc = res.body.meta.next_cursor;
+    expect(nc === null || (typeof nc === 'string' && nc.length === 26)).to.equal(true);
+  });
+
+  test("payload audit bebas password/hash", () => {
+    expect(JSON.stringify(res.body.data)).to.not.include('argon2id');
+    expect(JSON.stringify(res.body.data)).to.not.include('password_hash');
+  });
+
+  test("setiap entri punya id ULID 26 char + created_at ISO", () => {
+    for (const log of res.body.data) {
+      expect(log.id).to.have.lengthOf(26);
+      expect(log.created_at).to.be.a('string');
+    }
+  });
+}

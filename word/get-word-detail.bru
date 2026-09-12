@@ -1,0 +1,70 @@
+docs {
+Detail kata published — response paling lengkap di API ini.
+
+200 sukses:
+
+    {
+      "success": true,
+      "data": {
+        "id": "01JDW6XK2Q...",
+        "lemma": "makatn",
+        "language_id": "01JD9K...",
+        "notes": null,
+        "word_type": "word",
+        "status": "published",
+        "meanings": [
+          {
+            "word_class_id": "01JDA...",
+            "definition": "Aktivitas memasukkan makanan ke mulut",
+            "order_index": 1,
+            "translations": [
+              { "language_id": "01JD9...", "translation_text": "makan", "translation_type": "direct" }
+            ],
+            "examples": [
+              {
+                "source_language_id": "01JD9...",
+                "source_sentence": "Kami udah makatn tadi.",
+                "target_language_id": "01JD9...",
+                "target_sentence": "Kami sudah makan tadi.",
+                "source_type": "native_speaker"
+              }
+            ]
+          }
+        ],
+        "categories": [ { "id": "01JD...", "name": "Makanan" } ],
+        "pronunciations": [ { "id": "01JD...", "notation": "ipa", "value": "/makatn/", "dialect_id": null } ],
+        "images": [ { "url": "https://ik.imagekit.io/.../makatn.jpg", "alt_text": "Ilustrasi", "is_primary": true } ],
+        "related_words": [ { "word_id": "01JD...", "lemma": "makan", "relation_type": "synonym" } ],
+        "appears_in": [],
+        "variants": [ { "id": "01JD...", "form": "memakan", "variant_type": "derivation", "affix_type": "prefix", "affix_value": "me-", "dialect_id": null, "notes": null } ]
+      }
+    }
+
+Untuk kata komponen peribahasa, appears_in berisi frasa yang memakainya.
+}
+
+meta {
+  name: Get Word Detail
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/api/v1/words/{{word_id}}
+  body: none
+  auth: none
+}
+
+tests {
+  test("status 200 + struktur detail lengkap", () => {
+    expect(res.status).to.equal(200);
+    expect(res.body.data.lemma).to.be.a('string');
+    expect(res.body.data.word_type).to.be.a('string');
+    expect(res.body.data.related_words).to.be.an('array');
+    expect(res.body.data.appears_in).to.be.an('array');
+    expect(res.body.data.variants).to.be.an('array');
+    expect(res.body.data.meanings[0].translations[0].translation_text).to.be.a('string');
+    expect(res.body.data.pronunciations[0].value).to.equal('/makatn/');
+    expect(res.body.data.images[0]).to.have.property('url');
+    expect(res.body.data.images[0].is_primary).to.equal(true);
+  });
+}
