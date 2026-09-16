@@ -1,0 +1,58 @@
+docs {
+Koreksi kontribusi oleh verifikator: isi entity DIGANTI dengan payload
+koreksi, is_corrected true, lalu published + is_verified true — satu
+langkah. Body adalah discriminated union entity_type; snapshot pra-
+koreksi tersimpan di audit old_data (action "correct").
+
+Request ini mengoreksi contoh kalimat dari Add Example (perbaiki ejaan).
+
+200 sukses:
+
+    {
+      "success": true,
+      "data": {
+        "contribution_id": "01JDContribution0000000002",
+        "entity_type": "example",
+        "entity_id": "01JDExample00000000000000",
+        "status": "corrected",
+        "is_corrected": true
+      }
+    }
+
+entity_type tidak cocok dengan kontribsi → 400 VALIDATION_ERROR.
+Setelah correct, contoh tayang di GET /words/:id.
+}
+
+meta {
+  name: Correct Contribution
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}/api/v1/admin/contributions/{{example_contribution_id}}/correct
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "entity_type": "example",
+    "comment": "Perbaiki ejaan",
+    "source_sentence": "Iyo makatn dulu kah?",
+    "target_sentence": "Sudah makan dulu, ya?",
+    "source_type": "native_speaker"
+  }
+}
+
+tests {
+  test("200 + status corrected + is_corrected true", () => {
+    expect(res.status).to.equal(200);
+    expect(res.body.data.status).to.equal('corrected');
+    expect(res.body.data.is_corrected).to.equal(true);
+    expect(res.body.data.entity_type).to.equal('example');
+  });
+}

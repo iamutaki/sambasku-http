@@ -1,0 +1,32 @@
+docs {
+Memicu search miss (03-api-kontribusi-verifikasi.md): user mencari kata
+yang belum ada → 0 hasil → istilah TERCATAT otomatis sebagai peluang
+kontribusi (upsert hit_count; term dinormalisasi lower/trim — bukti
+ekuivalensi kapitalisasi ada di e2e modul search-miss).
+
+Request ini mencari "Kalintiak dua" (tidak ada di seed).
+
+200 (0 hasil):
+
+    { "success": true, "data": [], "meta": { "limit": 20, "next_cursor": null, "has_more": false } }
+
+Pencatatan best-effort — kegagalan pencatatan tidak membatalkan response.
+}
+
+meta {
+  name: Search Words (Empty — trigger miss)
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/v1/words/search?q=Kalintiak%20dua
+  body: none
+  auth: none
+}
+
+tests {
+  test("200 + data kosong (belum ada artinya)", () => {
+    expect(res.status).to.equal(200);
+    expect(res.body.data).to.be.an('array');
+  });
+}

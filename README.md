@@ -27,13 +27,20 @@ markdown + contoh JSON response — buka request di Bruno GUI lalu pilih
 tab **Docs** di panel kanan untuk melihat bentuk responsenya tanpa
 menjalankan request.
 
+Sumber kanonik contoh response (semua endpoint + semua kasus, sebagai
+file JSON valid): `docs/json/` di repo docs — dipakai untuk mock
+frontend / fixture test. Blok docs Bruno harus tetap sinkron dengannya.
+
 ## Struktur
 
 ```text
-auth/                  # 7 endpoint modul auth (urut sesuai seq)
+auth/                  # endpoint modul auth + Login Contributor (var contributor_access_token)
 language/              # GET languages + dialects (menyimpan var sambas_language_id dst.)
 category/              # GET categories
-word/                  # POST admin/words, GET :id, search, word-classes
+word/                  # POST admin/words (admin + contributor-pending), GET :id, search,
+                       #   word-classes, kontribusi media (pronounce/gambar/contoh)
+contribution/          # antrean review: list, detail, approve, reject, correct (Section 22)
+search-miss/           # pencarian kosong → peluang kontribusi di beranda + panel admin
 audit/                 # GET admin/audit-logs (admin & root)
 environments/local.bru # baseUrl + kredensial dev (NON-secret saja)
 ```
@@ -45,11 +52,15 @@ invocation terpisah tidak berbagi variable:
 
 ```bash
 cd http
-npx @usebruno/cli run --env local auth/ language/ word/ category/ audit/
-# urutan folder = urutan dependensi: login → var access_token;
-# languages → var sambas_language_id/indonesia_language_id; word memakai keduanya;
-# audit membaca jejak yang ditulis auth + word
+npx @usebruno/cli run --env local auth/ language/ word/ contribution/ search-miss/ category/ audit/
+# urutan folder = urutan dependensi: login → var access_token + contributor_access_token;
+# languages → var sambas_language_id/indonesia_language_id; word memakai keduanya
+# (create word admin + contributor-pending + kontribusi media);
+# contribution memverifikasi hasil word; audit membaca jejak semuanya
 ```
+
+Butuh seed user contributor & reviewer: `pnpm seed` di repo api
+(kredensial di environments/local.bru).
 
 ## Aturan sinkronisasi (WAJIB)
 

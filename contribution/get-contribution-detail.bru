@@ -1,0 +1,53 @@
+docs {
+Detail satu kontribusi untuk layar review: metadata kontribsi, review
+terakhir (null kalau belum ada keputusan), dan payload entity UTUH —
+word: detail kata semua status (anak pending ikut terlihat); anak:
+row entity + referensi kata parent.
+
+200 sukses (entity word):
+
+    {
+      "success": true,
+      "data": {
+        "contribution": {
+          "id": "01JDContribution0000000000",
+          "user_id": "01JDContributor00000000000",
+          "contributor_username": "contributor",
+          "entity_type": "word",
+          "entity_id": "01JDKALINTIAK0000000000",
+          "action": "create",
+          "status": "pending",
+          "created_at": "2026-09-16T10:00:00.000Z"
+        },
+        "review": null,
+        "entity": { "id": "01JDKALINTIAK0000000000", "lemma": "kalintiak", "status": "pending_review", "meanings": [ … ] }
+      }
+    }
+
+404 → error_code CONTRIBUTION_NOT_FOUND.
+}
+
+meta {
+  name: Get Contribution Detail
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/v1/admin/contributions/{{contribution_id}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+tests {
+  test("200 + contribution + entity payload utuh", () => {
+    expect(res.status).to.equal(200);
+    expect(res.body.data.contribution.status).to.equal('pending');
+    expect(res.body.data.review).to.equal(null);
+    expect(res.body.data.entity).to.be.an('object');
+    expect(res.body.data.entity.lemma).to.equal('kalintiak');
+  });
+}

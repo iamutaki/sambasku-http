@@ -14,7 +14,13 @@ Tambah kata lengkap (transaksional). Rate limit 30 req/menit per user.
       }
     }
 
-warnings hanya muncul kalau lemma serupa sudah ada di bahasa yang sama (non-blokir). Contributor + status published menghasilkan "pending_review".
+warnings hanya muncul kalau lemma serupa sudah ada di bahasa yang sama (non-blokir).
+
+Approval gate (Section 22) — hasil akhir tergantung role:
+- admin/editor/root/reviewer (request ini): published + is_verified true (self-verified)
+- contributor: pending_review + is_verified false — TIDAK tayang sampai
+  disetujui lewat antrean review (lihat Create Word Contributor +
+  folder contribution/)
 }
 
 meta {
@@ -93,6 +99,7 @@ tests {
     expect(res.status).to.equal(201);
     expect(res.body.data.status).to.equal('published');
     expect(res.body.data.word_type).to.equal('word');
+    expect(res.body.data.is_verified).to.be.a('boolean');
     expect(res.body.data.word_id).to.have.lengthOf(26);
   });
 

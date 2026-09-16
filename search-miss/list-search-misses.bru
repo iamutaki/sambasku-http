@@ -1,0 +1,51 @@
+docs {
+Beranda publik: pencarian kosong TERPOPULER yang belum terjawab —
+kartu "sedang dicari, belum ada artinya" supaya kontributor mengisi.
+Urut hit_count DESC; miss yang sudah terjawab (ada kata published
+dengan lemma = term) otomatis hilang (derived, tanpa kolom sinkron).
+
+200 sukses:
+
+    {
+      "success": true,
+      "data": [
+        {
+          "id": "01JDMiss0000000000000000000",
+          "term": "kalintiak dua",
+          "direction": "lemma",
+          "hit_count": 2,
+          "last_searched_at": "2026-09-16T10:05:00.000Z",
+          "is_fulfilled": false,
+          "created_at": "2026-09-16T10:00:00.000Z"
+        }
+      ],
+      "meta": { "limit": 10, "next_cursor": null, "has_more": false }
+    }
+}
+
+meta {
+  name: List Search Misses (Beranda)
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/v1/search-misses?limit=10
+  body: none
+  auth: none
+}
+
+script:post-response {
+  const item = (res.body.data || []).find((m) => m.term === 'kalintiak dua');
+  if (item) bru.setVar('search_miss_id', item.id);
+}
+
+tests {
+  test("200 + miss tercatat (term normalized lower/trim)", () => {
+    expect(res.status).to.equal(200);
+    const item = res.body.data.find((m) => m.term === 'kalintiak dua');
+    expect(item).to.not.be.undefined;
+    expect(item.hit_count).to.be.at.least(1);
+    expect(item.direction).to.equal('lemma');
+    expect(item.is_fulfilled).to.equal(false);
+  });
+}

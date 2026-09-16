@@ -1,0 +1,42 @@
+docs {
+Verifikasi kata oleh verifikator (admin/root/reviewer) — is_verified true.
+Pakai word_id dari request Create Word (variable koleksi).
+
+200 sukses:
+
+    { "success": true, "data": null }
+
+403 bukan verifikator (contributor/editor):
+
+    { "success": false, "error_code": "FORBIDDEN", "message": "Role tidak diizinkan mengakses endpoint ini", "details": null }
+
+404 kata tidak ditemukan:
+
+    { "success": false, "error_code": "WORD_NOT_FOUND", "message": "Kata dengan id tersebut tidak ditemukan", "details": null }
+
+Setelah verify, GET /words/:id menampilkan is_verified true + verified_at.
+Audit trail mencatat action "verify" (Section 21).
+}
+
+meta {
+  name: Verify Word
+  seq: 7
+}
+
+post {
+  url: {{baseUrl}}/api/v1/admin/words/{{word_id}}/verify
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+tests {
+  test("200 + data null (kata terverifikasi)", () => {
+    expect(res.status).to.equal(200);
+    expect(res.body.success).to.equal(true);
+    expect(res.body.data).to.equal(null);
+  });
+}

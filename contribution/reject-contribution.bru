@@ -1,0 +1,57 @@
+docs {
+Tolak kontribusi — comment (alasan) WAJIB. Entity jadi 'rejected'
+(terminal; kontributor kirim ulang sebagai kontribusi baru), review row
+status 'rejected' + comment, audit action "reject".
+
+Request ini menolak kontribsi pelafalan dari Add Pronunciation.
+
+200 sukses:
+
+    {
+      "success": true,
+      "data": {
+        "contribution_id": "01JDContribution0000000001",
+        "entity_type": "pronunciation",
+        "entity_id": "01JDPronunciation0000000000",
+        "status": "rejected"
+      }
+    }
+
+400 tanpa comment:
+
+    {
+      "success": false,
+      "error_code": "VALIDATION_ERROR",
+      "message": "Data yang dikirim tidak valid",
+      "details": [ { "field": "comment", "message": "Alasan penolakan wajib diisi" } ]
+    }
+}
+
+meta {
+  name: Reject Contribution
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/api/v1/admin/contributions/{{pronunciation_contribution_id}}/reject
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "comment": "Pelafalan tidak sesuai penutur Sambas kota"
+  }
+}
+
+tests {
+  test("200 + status rejected + entity_type pronunciation", () => {
+    expect(res.status).to.equal(200);
+    expect(res.body.data.status).to.equal('rejected');
+    expect(res.body.data.entity_type).to.equal('pronunciation');
+  });
+}

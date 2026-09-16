@@ -1,0 +1,61 @@
+docs {
+Kontribusi gambar contoh pada kata existing — file hasil DIRECT UPLOAD
+via upload-token (modul image), kirim referensinya saja. Di sini
+dijalankan sebagai ADMIN: langsung published + is_verified true
+(bandingkan Add Pronunciation yang pakai contributor → pending).
+
+201 sukses (admin):
+
+    {
+      "success": true,
+      "data": {
+        "id": "01JDWordImage0000000000000",
+        "word_id": "01JDW6XK2Q...",
+        "url": "https://ik.imagekit.io/dev/words/makatn-2.jpg",
+        "provider_file_id": "bruno-1770000000000",
+        "alt_text": "Makan pakai tangan",
+        "is_primary": false,
+        "status": "published",
+        "is_verified": true,
+        "is_corrected": false
+      }
+    }
+}
+
+meta {
+  name: Add Word Image (Admin)
+  seq: 11
+}
+
+post {
+  url: {{baseUrl}}/api/v1/words/{{word_id}}/images
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+script:pre-request {
+  // file id unik per run — hindari tabrakan unique (provider, provider_file_id)
+  bru.setVar('bruno_media_file_id', 'bruno-' + Date.now());
+}
+
+body:json {
+  {
+    "url": "https://ik.imagekit.io/dev/words/makatn-2.jpg",
+    "provider_file_id": "{{bruno_media_file_id}}",
+    "alt_text": "Makan pakai tangan",
+    "is_primary": false
+  }
+}
+
+tests {
+  test("201 + published + is_verified true (admin self-verified)", () => {
+    expect(res.status).to.equal(201);
+    expect(res.body.data.status).to.equal('published');
+    expect(res.body.data.is_verified).to.equal(true);
+    expect(res.body.data.id).to.have.lengthOf(26);
+  });
+}

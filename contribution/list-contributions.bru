@@ -1,0 +1,68 @@
+docs {
+Antrean review kontribusi (Section 22 approval gate) — hanya verifikator
+admin/root/reviewer. Filter status/entity_type/action + cursor pagination
+(Section 13). Item menyertakan contributor_username untuk tampilan panel.
+
+200 sukses:
+
+    {
+      "success": true,
+      "data": [
+        {
+          "id": "01JDN Contribution00000000",
+          "user_id": "01JDContributor00000000000",
+          "contributor_username": "contributor",
+          "entity_type": "word",
+          "entity_id": "01JDKALINTIAK0000000000",
+          "action": "create",
+          "status": "pending",
+          "created_at": "2026-09-16T10:00:00.000Z"
+        }
+      ],
+      "meta": { "limit": 20, "next_cursor": null, "has_more": false }
+    }
+
+403 untuk editor/contributor (bukan verifikator).
+}
+
+meta {
+  name: List Contributions (Pending)
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/v1/admin/contributions?status=pending&limit=20
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+script:post-response {
+  // Pilih id per entity_type untuk request berikutnya (approve/reject/correct)
+  const items = res.body.data || [];
+  const word = items.find((c) => c.entity_type === 'word');
+  const pronunciation = items.find((c) => c.entity_type === 'pronunciation');
+  const example = items.find((c) => c.entity_type === 'example');
+  if (word) bru.setVar('contribution_id', word.id);
+  if (pronunciation) bru.setVar('pronunciation_contribution_id', pronunciation.id);
+  if (example) bru.setVar('example_contribution_id', example.id);
+}
+
+tests {
+  test("200 + envelope + meta cursor", () => {
+    expect(res.status).to.equal(200);
+    expect(res.body.success).to.equal(true);
+    expect(res.body.data).to.be.an('array');
+    expect(res.body.meta).to.have.property('has_more');
+    expect(res.body.meta).to.have.property('next_cursor');
+  });
+
+  test("ada item pending dari alur contributor", () => {
+    const pending = res.body.data.filter((c) => c.status === 'pending');
+    expect(pending.length).to.be.at.least(1);
+    expect(pending[0]).to.have.property('contributor_username');
+  });
+}

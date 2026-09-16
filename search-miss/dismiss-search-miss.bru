@@ -1,0 +1,33 @@
+docs {
+Singkirkan miss dari beranda/panel (spam, istilah tidak layak) — soft
+delete, jejak tetap ada (Section 7). Admin & root.
+
+200 sukses:
+
+    { "success": true, "data": null }
+
+404 → error_code SEARCH_MISS_NOT_FOUND.
+}
+
+meta {
+  name: Dismiss Search Miss
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/api/v1/admin/search-misses/{{search_miss_id}}/dismiss
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+tests {
+  test("200 + data null", () => {
+    expect(res.status).to.equal(200);
+    expect(res.body.success).to.equal(true);
+    expect(res.body.data).to.equal(null);
+  });
+}

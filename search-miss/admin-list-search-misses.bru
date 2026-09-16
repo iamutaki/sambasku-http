@@ -1,0 +1,47 @@
+docs {
+Panel admin: SEMUA search miss (termasuk yang sudah terjawab —
+is_fulfilled true) + filter direction/fulfilled + cursor pagination
+Section 13. Admin & root saja.
+
+200 sukses:
+
+    {
+      "success": true,
+      "data": [
+        {
+          "id": "01JDMiss0000000000000000000",
+          "term": "kalintiak dua",
+          "direction": "lemma",
+          "hit_count": 2,
+          "last_searched_at": "2026-09-16T10:05:00.000Z",
+          "is_fulfilled": false,
+          "created_at": "2026-09-16T10:00:00.000Z"
+        }
+      ],
+      "meta": { "limit": 20, "next_cursor": null, "has_more": false }
+    }
+}
+
+meta {
+  name: Admin List Search Misses
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/api/v1/admin/search-misses?limit=20
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+tests {
+  test("200 + daftar miss dengan status terjawab", () => {
+    expect(res.status).to.equal(200);
+    expect(res.body.data).to.be.an('array');
+    expect(res.body.data[0]).to.have.property('is_fulfilled');
+    expect(res.body.meta).to.have.property('has_more');
+  });
+}

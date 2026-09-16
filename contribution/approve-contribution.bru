@@ -1,0 +1,49 @@
+docs {
+Setujui kontribusi oleh verifikator (admin/root/reviewer): entity jadi
+published + is_verified true (+ verified_by/at untuk kata; anak-anak kata
+ikut keputusan). Baris contribution_reviews dibuat, contributions.status
+jadi 'approved'. Audit action "approve" (Section 21).
+
+200 sukses:
+
+    {
+      "success": true,
+      "data": {
+        "contribution_id": "01JDContribution0000000000",
+        "entity_type": "word",
+        "entity_id": "01JDKALINTIAK0000000000",
+        "status": "approved"
+      }
+    }
+
+Setelah approve, GET /words/:id kata tsb → 200 (sudah tayang).
+}
+
+meta {
+  name: Approve Contribution
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/v1/admin/contributions/{{contribution_id}}/approve
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "comment": "Valid, silakan tayang"
+  }
+}
+
+tests {
+  test("200 + status approved", () => {
+    expect(res.status).to.equal(200);
+    expect(res.body.data.status).to.equal('approved');
+    expect(res.body.data.entity_type).to.equal('word');
+  });
+}

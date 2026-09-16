@@ -1,5 +1,7 @@
 docs {
 Detail kata published — response paling lengkap di API ini.
+Anak konten (contoh/gambar) yang statusnya pending_review TIDAK ikut
+tayang di sini — hanya lewat layar review antrean (Section 22).
 
 200 sukses:
 
@@ -12,9 +14,12 @@ Detail kata published — response paling lengkap di API ini.
         "notes": null,
         "word_type": "word",
         "status": "published",
+        "is_verified": true,
+        "is_corrected": false,
         "meanings": [
           {
-            "word_class_id": "01JDA...",
+            "id": "01JDMeaning0000000000000",
+            "word_class": { "id": "01JDA...", "code": "adv", "name": "Adverbia", "parent_id": null },
             "definition": "Aktivitas memasukkan makanan ke mulut",
             "order_index": 1,
             "translations": [
@@ -22,6 +27,7 @@ Detail kata published — response paling lengkap di API ini.
             ],
             "examples": [
               {
+                "id": "01JDExample0000000000000",
                 "source_language_id": "01JD9...",
                 "source_sentence": "Kami udah makatn tadi.",
                 "target_language_id": "01JD9...",
@@ -33,7 +39,7 @@ Detail kata published — response paling lengkap di API ini.
         ],
         "categories": [ { "id": "01JD...", "name": "Makanan" } ],
         "pronunciations": [ { "id": "01JD...", "notation": "ipa", "value": "/makatn/", "dialect_id": null } ],
-        "images": [ { "url": "https://ik.imagekit.io/.../makatn.jpg", "alt_text": "Ilustrasi", "is_primary": true } ],
+        "images": [ { "id": "01JD...", "url": "https://ik.imagekit.io/.../makatn.jpg", "alt_text": "Ilustrasi", "is_primary": true } ],
         "related_words": [ { "word_id": "01JD...", "lemma": "makan", "relation_type": "synonym" } ],
         "appears_in": [],
         "variants": [ { "id": "01JD...", "form": "memakan", "variant_type": "derivation", "affix_type": "prefix", "affix_value": "me-", "dialect_id": null, "notes": null } ]
@@ -41,6 +47,7 @@ Detail kata published — response paling lengkap di API ini.
     }
 
 Untuk kata komponen peribahasa, appears_in berisi frasa yang memakainya.
+meaning id dipakai chaining Add Example (kontribusi contoh kalimat).
 }
 
 meta {
@@ -54,14 +61,20 @@ get {
   auth: none
 }
 
+vars:post-response {
+  meaning_id: res.body.data.meanings[0].id
+}
+
 tests {
   test("status 200 + struktur detail lengkap", () => {
     expect(res.status).to.equal(200);
     expect(res.body.data.lemma).to.be.a('string');
     expect(res.body.data.word_type).to.be.a('string');
+    expect(res.body.data.is_corrected).to.be.a('boolean');
     expect(res.body.data.related_words).to.be.an('array');
     expect(res.body.data.appears_in).to.be.an('array');
     expect(res.body.data.variants).to.be.an('array');
+    expect(res.body.data.meanings[0].id).to.have.lengthOf(26);
     expect(res.body.data.meanings[0].translations[0].translation_text).to.be.a('string');
     expect(res.body.data.pronunciations[0].value).to.equal('/makatn/');
     expect(res.body.data.images[0]).to.have.property('url');
