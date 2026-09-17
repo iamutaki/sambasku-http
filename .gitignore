@@ -1,0 +1,4 @@
+# Environment Bruno selain local TIDAK di-commit (base-stack.md Section 20:
+# kredensial staging/production dikelola lokal). production.bru juga bila ada.
+staging.bru
+production.bru
