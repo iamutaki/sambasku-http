@@ -9,6 +9,7 @@ Jejak audit mutasi data - hanya admin & root. Urut terbaru dulu, cursor-based.
         {
           "id": "01JDX...",
           "user_id": "01JD...",
+          "user_name": "admin",
           "action": "create",
           "entity_type": "word",
           "entity_id": "01JD...",
@@ -22,6 +23,8 @@ Jejak audit mutasi data - hanya admin & root. Urut terbaru dulu, cursor-based.
     }
 
 Filter: user_id, entity_type, entity_id, from, to (kombinasi AND).
+user_name = username pelaku (LEFT JOIN users); null kalau user_id null /
+user sudah dihapus.
 }
 
 meta {
@@ -59,6 +62,12 @@ tests {
     for (const log of res.body.data) {
       expect(log.id).to.have.lengthOf(26);
       expect(log.created_at).to.be.a('string');
+    }
+  });
+
+  test("setiap entri punya user_name (string atau null)", () => {
+    for (const log of res.body.data) {
+      expect(log.user_name === null || typeof log.user_name === 'string').to.equal(true);
     }
   });
 }

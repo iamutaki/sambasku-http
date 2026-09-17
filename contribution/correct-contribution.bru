@@ -1,10 +1,18 @@
 docs {
 Koreksi kontribusi oleh verifikator: isi entity DIGANTI dengan payload
-koreksi, is_corrected true, lalu published + is_verified true - satu
-langkah. Body adalah discriminated union entity_type; snapshot pra-
+koreksi. Body adalah discriminated union entity_type; snapshot pra-
 koreksi tersimpan di audit old_data (action "correct").
 
-Request ini mengoreksi contoh kalimat dari Add Example (perbaiki ejaan).
+Flag `publish` (opsional, default true):
+- true  → is_corrected true + published + is_verified true (satu langkah);
+          contributions.status = "corrected".
+- false → KOREKSI SAJA: entity is_corrected true TAPI status tetap
+          "pending_review"; contributions TETAP "pending" & tanpa review
+          row (masih bisa di-approve/dikoreksi lagi). Lihat request
+          "Correct Contribution (Tanpa Publish)".
+
+Request ini mengoreksi contoh kalimat dari Add Example (perbaiki ejaan)
+DAN langsung menerbitkannya.
 
 200 sukses:
 
@@ -25,7 +33,7 @@ Setelah correct, contoh tayang di GET /words/:id.
 
 meta {
   name: Correct Contribution
-  seq: 6
+  seq: 7
 }
 
 post {
@@ -41,6 +49,7 @@ auth:bearer {
 body:json {
   {
     "entity_type": "example",
+    "publish": true,
     "comment": "Perbaiki ejaan",
     "source_sentence": "Iyo makatn dulu kah?",
     "target_sentence": "Sudah makan dulu, ya?",

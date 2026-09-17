@@ -1,0 +1,61 @@
+docs {
+Koreksi kontribusi TANPA publish (publish=false) - "koreksi saja":
+isi entity DIGANTI + is_corrected true, TAPI status entity tetap
+"pending_review" dan contributions.status TETAP "pending" (tanpa review
+row). Kontribusi masih di antrean - bisa di-approve (publish) atau
+dikoreksi lagi. Audit action "correct" tetap tercatat di old_data/new_data.
+
+Request ini mengoreksi contoh kalimat dari Add Example tanpa
+menerbitkannya; request "Correct Contribution" berikutnya menerbitkan
+kontribusi yang sama (masih pending).
+
+200 sukses:
+
+    {
+      "success": true,
+      "data": {
+        "contribution_id": "01JDContribution0000000002",
+        "entity_type": "example",
+        "entity_id": "01JDExample00000000000000",
+        "status": "pending",
+        "is_corrected": true
+      }
+    }
+
+Setelah ini contoh BELUM tayang di GET /words/:id.
+}
+
+meta {
+  name: Correct Contribution (Tanpa Publish)
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}/api/v1/admin/contributions/{{example_contribution_id}}/correct
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "entity_type": "example",
+    "publish": false,
+    "comment": "Perbaiki ejaan (belum tayang)",
+    "source_sentence": "Kami makatn kalintiak.",
+    "target_sentence": "Kami makan ikan kecil.",
+    "source_type": "native_speaker"
+  }
+}
+
+tests {
+  test("200 + status pending + is_corrected true (belum tayang)", () => {
+    expect(res.status).to.equal(200);
+    expect(res.body.data.status).to.equal('pending');
+    expect(res.body.data.is_corrected).to.equal(true);
+    expect(res.body.data.entity_type).to.equal('example');
+  });
+}
