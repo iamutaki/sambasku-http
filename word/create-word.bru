@@ -16,9 +16,9 @@ Tambah kata lengkap (transaksional). Rate limit 30 req/menit per user.
 
 warnings hanya muncul kalau lemma serupa sudah ada di bahasa yang sama (non-blokir).
 
-Approval gate (Section 22) — hasil akhir tergantung role:
+Approval gate (Section 22) - hasil akhir tergantung role:
 - admin/editor/root/reviewer (request ini): published + is_verified true (self-verified)
-- contributor: pending_review + is_verified false — TIDAK tayang sampai
+- contributor: pending_review + is_verified false - TIDAK tayang sampai
   disetujui lewat antrean review (lihat Create Word Contributor +
   folder contribution/)
 }
@@ -86,7 +86,7 @@ body:json {
 }
 
 script:pre-request {
-  // file id unik per run — hindari tabrakan unique (provider, provider_file_id) saat re-run
+  // file id unik per run - hindari tabrakan unique (provider, provider_file_id) saat re-run
   bru.setVar('bruno_file_id', 'bruno-' + Date.now());
 }
 

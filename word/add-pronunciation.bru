@@ -42,7 +42,7 @@ auth:bearer {
 }
 
 script:pre-request {
-  // nilai unik per run — hindari tabrakan unique (word, dialek, notasi, nilai)
+  // nilai unik per run - hindari tabrakan unique (word, dialek, notasi, nilai)
   bru.setVar('pron_value', '/makatn-' + Date.now() + '/');
 }
 

@@ -1,7 +1,7 @@
 docs {
 Memicu search miss (03-api-kontribusi-verifikasi.md): user mencari kata
 yang belum ada → 0 hasil → istilah TERCATAT otomatis sebagai peluang
-kontribusi (upsert hit_count; term dinormalisasi lower/trim — bukti
+kontribusi (upsert hit_count; term dinormalisasi lower/trim - bukti
 ekuivalensi kapitalisasi ada di e2e modul search-miss).
 
 Request ini mencari "Kalintiak dua" (tidak ada di seed).
@@ -10,11 +10,11 @@ Request ini mencari "Kalintiak dua" (tidak ada di seed).
 
     { "success": true, "data": [], "meta": { "limit": 20, "next_cursor": null, "has_more": false } }
 
-Pencatatan best-effort — kegagalan pencatatan tidak membatalkan response.
+Pencatatan best-effort - kegagalan pencatatan tidak membatalkan response.
 }
 
 meta {
-  name: Search Words (Empty — trigger miss)
+  name: Search Words (Empty - trigger miss)
   seq: 1
 }
 

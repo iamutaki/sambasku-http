@@ -26,7 +26,7 @@ tests {
     expect(res.status).to.equal(200);
     expect(res.body.data.refresh_token).to.be.a('string');
     expect(res.body.data.access_token).to.exist;
-    // res.headers di Bruno plain object — set-cookie bisa string/array
+    // res.headers di Bruno plain object - set-cookie bisa string/array
     const raw = res.headers['set-cookie'];
     const setCookies = Array.isArray(raw) ? raw : raw ? [raw] : [];
     expect(setCookies.length).to.equal(0);

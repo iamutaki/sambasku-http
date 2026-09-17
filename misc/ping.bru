@@ -1,0 +1,38 @@
+docs {
+Canary CI/CD - memverifikasi deploy baru tanpa DB dan tanpa auth.
+Field `runtime` membuktikan entry yang melayani: "node" (dev lokal)
+atau "cloudflare-workers" (staging/production). Envelope standar Section 13.
+
+200 sukses:
+
+    {
+      "success": true,
+      "data": {
+        "pong": true,
+        "time": "2026-09-17T14:22:21.458Z",
+        "env": "staging",
+        "runtime": "cloudflare-workers"
+      }
+    }
+}
+
+meta {
+  name: Ping (Canary)
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/v1/ping
+  body: none
+  auth: none
+}
+
+tests {
+  test("200 + pong + runtime teridentifikasi", () => {
+    expect(res.status).to.equal(200);
+    expect(res.body.success).to.equal(true);
+    expect(res.body.data.pong).to.equal(true);
+    expect(res.body.data.runtime).to.be.oneOf(['node', 'cloudflare-workers']);
+    expect(res.body.data.env).to.be.a('string');
+  });
+}

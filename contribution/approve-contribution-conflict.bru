@@ -3,14 +3,14 @@ Bukti race-safe: kontribusi yang SUDAH diputus TIDAK bisa diputus ulang.
 Request ini men-approve ulang kontribsi yang baru saja di-approve
 (Approve Contribution) → 409 CONTRIBUTION_ALREADY_REVIEWED.
 Cek pending dilakukan DI DALAM transaksi (dua verifikator klik bersamaan:
-satu sukses, satu 409 — bukan 500).
+satu sukses, satu 409 - bukan 500).
 
 409:
 
     {
       "success": false,
       "error_code": "CONTRIBUTION_ALREADY_REVIEWED",
-      "message": "Kontribusi ini sudah diproses — sudah ada keputusan review",
+      "message": "Kontribusi ini sudah diproses - sudah ada keputusan review",
       "details": null
     }
 }
@@ -32,7 +32,7 @@ auth:bearer {
 
 body:json {
   {
-    "comment": "approve kedua — harus ditolak 409"
+    "comment": "approve kedua - harus ditolak 409"
   }
 }
 

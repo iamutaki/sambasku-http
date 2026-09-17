@@ -19,7 +19,7 @@ body:json {
 }
 
 tests {
-  test("201 sukses (atau 409 saat re-run — user sudah terdaftar)", () => {
+  test("201 sukses (atau 409 saat re-run - user sudah terdaftar)", () => {
     if (res.status === 201) {
       expect(res.body.success).to.equal(true);
       expect(res.body.data.user_id).to.be.a('string');

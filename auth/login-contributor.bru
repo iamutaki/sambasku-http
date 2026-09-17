@@ -1,12 +1,12 @@
 docs {
 Login sebagai contributor (role default hasil seed `pnpm seed`).
-Token disimpan ke variable TERPISAH `contributor_access_token` — jangan
+Token disimpan ke variable TERPISAH `contributor_access_token` - jangan
 menimpa `access_token` milik admin yang dipakai request lain.
 
 Dipakai alur approval gate (Section 22): submit contributor masuk
 antrean review (pending_review), diverifikasi lewat folder contribution/.
 
-200 sukses — bentuk sama seperti Login admin:
+200 sukses - bentuk sama seperti Login admin:
 
     { "success": true, "data": { "access_token": "eyJ…", "user": { "role": "contributor", … } } }
 }
