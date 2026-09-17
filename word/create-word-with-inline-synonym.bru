@@ -1,0 +1,144 @@
+docs {
+04-api-sinonim-inline.md — related_words menerima DUA bentuk: Form A (link
+kata yang SUDAH ada, word_id) dan Form B (kata sinonim BARU dibuat inline,
+dibuat sekaligus dalam satu request). Keduanya boleh dicampur dalam satu
+request.
+
+Form B default mewarisi makna induk (inherit_meanings=true): server menyalin
+penuh graph makna induk materialized + mencatat provenance
+(meanings.inherited_from_meaning_id). meaning_overrides mengubah hasil
+salinan satu-per-satu (translate-and-replace: field yang tidak disebut
+tetap memakai hasil salinan).
+
+201 sukses:
+
+    {
+      "success": true,
+      "data": {
+        "word_id": "01JDW...",
+        "lemma": "makatn",
+        "word_type": "word",
+        "status": "published",
+        "created_at": "2026-09-12T02:00:00.000Z",
+        "inline_created_words": [
+          {
+            "word_id": "01JDX...",
+            "lemma": "ngamakn",
+            "relation_type": "synonym",
+            "word_type": "word",
+            "status": "draft",
+            "is_verified": false,
+            "meanings_count": 1,
+            "inherited_meanings_count": 1,
+            "overridden_meanings_count": 0
+          }
+        ]
+      }
+    }
+
+Minimal 1 Form B per request; maksimal 5. Lemma inline tidak boleh sama
+dengan lemma induk maupun duplikat sesama Form B. Status Form B default =
+status yang dikirim di body induk (bisa di-override per kata).
+}
+
+meta {
+  name: Create Word With Inline Synonym
+  seq: 13
+}
+
+post {
+  url: {{baseUrl}}/api/v1/admin/words
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "language_id": "{{sambas_language_id}}",
+    "lemma": "makatn bruno inline",
+    "notes": "Sinonim inline dibuat sekaligus (04-api-sinonim-inline.md)",
+    "meanings": [
+      {
+        "word_class_id": "{{word_class_id}}",
+        "definition": "Aktivitas memasukkan makanan ke mulut",
+        "order_index": 1,
+        "translations": [
+          {
+            "language_id": "{{indonesia_language_id}}",
+            "translation_text": "makan",
+            "translation_type": "direct"
+          }
+        ],
+        "examples": [
+          {
+            "source_language_id": "{{sambas_language_id}}",
+            "source_sentence": "Kami udah makatn tadi.",
+            "target_language_id": "{{indonesia_language_id}}",
+            "target_sentence": "Kami sudah makan tadi.",
+            "source_type": "native_speaker"
+          }
+        ]
+      }
+    ],
+    "word_type": "word",
+    "category_ids": [],
+    "related_words": [
+      {
+        "relation_type": "synonym",
+        "word": {
+          "lemma": "ngamakn bruno",
+          "inherit_meanings": true,
+          "status": "draft"
+        }
+      },
+      {
+        "relation_type": "synonym",
+        "word": {
+          "lemma": "ngunyahn bruno",
+          "inherit_meanings": true,
+          "meaning_overrides": [
+            {
+              "meaning_index": 0,
+              "definition": "Mengunyah makanan"
+            }
+          ]
+        }
+      }
+    ],
+    "status": "published"
+  }
+}
+
+vars:post-response {
+  word_id: res.body.data.word_id
+  inline_word_id: res.body.data.inline_created_words[0].word_id
+}
+
+tests {
+  test("201 + induk published (admin self-verified)", () => {
+    expect(res.status).to.equal(201);
+    expect(res.body.data.status).to.equal("published");
+    expect(res.body.data.is_verified).to.be.a("boolean");
+  });
+
+  test("inline_created_words sesuai request: 2 kata, urut, inherit + override", () => {
+    expect(res.body.data.inline_created_words).to.have.lengthOf(2);
+    expect(res.body.data.inline_created_words[0].lemma).to.equal("ngamakn bruno");
+    expect(res.body.data.inline_created_words[0].relation_type).to.equal("synonym");
+    // status Form B default ikut body induk (published), di-override jadi draft
+    expect(res.body.data.inline_created_words[0].status).to.equal("draft");
+    expect(res.body.data.inline_created_words[0].inherited_meanings_count).to.equal(1);
+    expect(res.body.data.inline_created_words[0].overridden_meanings_count).to.equal(0);
+    expect(res.body.data.inline_created_words[1].overridden_meanings_count).to.equal(1);
+  });
+
+  test("resp duplikat lemma → warnings (non-blokir)", () => {
+    if (res.body.data.warnings) {
+      expect(res.body.data.warnings[0].field).to.equal("lemma");
+    }
+  });
+}

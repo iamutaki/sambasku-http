@@ -1,0 +1,81 @@
+docs {
+Regresi Form A — 01-api-tambah-kata.md: related_words dengan word_id menautkan
+kata yang SUDAH ada (tanpa membuat kata baru inline). Bentuk ini TIDAK
+berubah oleh 04 (sinonim inline). Invers TIDAK disimpan: link induk → kata
+lama tampil sebagai related_words di detail induk; detail kata lama menampilkannya
+sebagai appears_in.
+
+201 sukses — response TANPA field inline_created_words (tidak ada Form B):
+
+    {
+      "success": true,
+      "data": {
+        "word_id": "01JDW...",
+        "lemma": "pelampong bruno",
+        "word_type": "word",
+        "status": "published",
+        "created_at": "2026-09-12T02:00:00.000Z"
+      }
+    }
+}
+
+meta {
+  name: Create Word Link Existing
+  seq: 14
+}
+
+post {
+  url: {{baseUrl}}/api/v1/admin/words
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "language_id": "{{sambas_language_id}}",
+    "lemma": "sabayan bruno",
+    "notes": "Hanya tautan ke kata yang sudah ada (Form A — kontrak 01)",
+    "meanings": [
+      {
+        "word_class_id": "{{word_class_id}}",
+        "definition": "Kata yang ditautkan sebagai sinonim kata lain",
+        "order_index": 1,
+        "translations": [
+          {
+            "language_id": "{{indonesia_language_id}}",
+            "translation_text": "kata bertautan",
+            "translation_type": "direct"
+          }
+        ]
+      }
+    ],
+    "word_type": "word",
+    "category_ids": [],
+    "related_words": [
+      { "word_id": "{{word_id}}", "relation_type": "synonym" }
+    ],
+    "status": "published"
+  }
+}
+
+vars:post-response {
+  word_id: res.body.data.word_id
+}
+
+tests {
+  test("201 + tanpa inline_created_words (murni Form A)", () => {
+    expect(res.status).to.equal(201);
+    expect(res.body.data.status).to.equal("published");
+    expect(res.body.data.inline_created_words).to.be.undefined;
+  });
+
+  test("relasi synonym tercatat (word_id tidak boleh kosong saat run)", () => {
+    if (res.body.data.warnings) {
+      expect(res.body.data.warnings[0].field).to.equal("lemma");
+    }
+  });
+}
