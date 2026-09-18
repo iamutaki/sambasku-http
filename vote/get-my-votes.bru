@@ -1,0 +1,41 @@
+docs {
+Vote milik user login untuk batch target (08-api-upvote-downvote.md) -
+dipakai UI untuk merender state tombol upvote/downvote. Format targets sama
+dengan Get Vote Counts. Login wajib (semua role).
+
+200 sukses (hanya target yang dipilih user yang muncul):
+
+    {
+      "success": true,
+      "data": [
+        { "target_type": "word", "target_id": "01J...", "value": 1 }
+      ]
+    }
+
+400 format targets salah; 401 tanpa token.
+}
+
+meta {
+  name: Get My Votes
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/api/v1/votes/my?targets=word:{{word_id}}
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{contributor_access_token}}
+}
+
+tests {
+  test("200 + hanya target yang dipilih user", () => {
+    expect(res.status).to.equal(200);
+    expect(res.body.success).to.equal(true);
+    expect(res.body.data).to.be.an("array");
+    for (const v of res.body.data) {
+      expect([1, -1]).to.include(v.value);
+    }
+  });
+}

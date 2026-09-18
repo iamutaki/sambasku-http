@@ -1,0 +1,37 @@
+docs {
+Batch jumlah vote per target (publik, tanpa login) - client memegang semua
+id dari word detail, jadi endpoint ini tidak mengubah response existing.
+Format: targets = daftar "type:id" dipisah koma, maks 50 pasang.
+
+200 sukses (target tanpa vote ikut sebagai 0/0):
+
+    {
+      "success": true,
+      "data": [
+        { "target_type": "word", "target_id": "01J...", "upvotes": 4, "downvotes": 1 }
+      ]
+    }
+
+400 format targets salah (bukan pasang "type:id" ULID 26 char, atau lebih
+dari 50); 429 lebih dari 100 request/menit per IP.
+}
+
+meta {
+  name: Get Vote Counts
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/v1/votes/counts?targets=word:{{word_id}}
+}
+
+tests {
+  test("200 + counts per target", () => {
+    expect(res.status).to.equal(200);
+    expect(res.body.success).to.equal(true);
+    expect(res.body.data).to.be.an("array");
+    expect(res.body.data[0].target_id).to.equal(vars.word_id);
+    expect(res.body.data[0].upvotes).to.be.a("number");
+    expect(res.body.data[0].downvotes).to.be.a("number");
+  });
+}
