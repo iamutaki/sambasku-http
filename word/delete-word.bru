@@ -1,0 +1,48 @@
+docs {
+Soft-delete kata - DELETE /api/v1/admin/words/:id (07-api-delete-kata.md).
+Role: admin/editor/root/reviewer. Contributor 403 (perubahan existing =
+jalur antrean review).
+
+Soft-delete: set deleted_at+deleted_by; baris & children dipertahankan
+untuk audit/recovery tetapi hilang dari SEMUA query publik & admin
+(effect = hapus). Idempotent sisi server: kata sudah dihapus → 404.
+
+200 sukses:
+
+    { "success": true, "data": null }
+
+404 WORD_NOT_FOUND bila id tidak ada / sudah dihapus:
+
+    { "success": false, "error_code": "WORD_NOT_FOUND",
+      "message": "Kata dengan id tersebut tidak ditemukan", "details": null }
+
+Setelah delete: GET /api/v1/words/:id dan GET /api/v1/admin/words/:id
+sama-sama 404; audit trail mencatat action "delete" + old_data (Section 21).
+}
+
+meta {
+  name: Delete Word
+  seq: 17
+}
+
+delete {
+  url: {{baseUrl}}/api/v1/admin/words/{{word_id}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+tests {
+  test("200 + data null (kata di-soft-delete)", () => {
+    expect(res.status).to.equal(200);
+    expect(res.body.success).to.equal(true);
+    expect(res.body.data).to.equal(null);
+  });
+
+  test("DELETE kedua → 404 (idempotent)", () => {
+    // Jalankan request dua kali: yang kedua harus 404 WORD_NOT_FOUND.
+  });
+}
