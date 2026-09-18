@@ -1,3 +1,29 @@
+docs {
+Daftar kelas kata untuk dropdown (publik). alias = nama lain yang lebih
+dikenal user (Verba → "Kata Kerja"), description = keterangan + istilah
+asing (verb). Baris "Umum" (code umum) = pilihan generik saat user belum
+tahu kelas katanya.
+
+200 sukses:
+
+    {
+      "success": true,
+      "data": [
+        {
+          "id": "01J...",
+          "code": "v",
+          "name": "Verba",
+          "alias": "Kata Kerja",
+          "description": "verb - kata yang menyatakan perbuatan atau tindakan",
+          "parent_id": null
+        }
+      ]
+    }
+
+Data lengkap diisi seeder (12 kelas kata KBBI-aligned + Umum) - jalankan
+pnpm seed kalau daftar masih 4 baris lama.
+}
+
 meta {
   name: List Word Classes
   seq: 1
@@ -20,5 +46,13 @@ tests {
     expect(res.status).to.equal(200);
     const codes = res.body.data.map((wc) => wc.code);
     expect(codes).to.include('n');
+  });
+
+  test("alias + keterangan hadir (Verba = Kata Kerja) + fallback Umum ada", () => {
+    const verba = res.body.data.find((wc) => wc.code === 'v');
+    expect(verba.alias).to.equal('Kata Kerja');
+    expect(verba.description).to.contain('verb');
+    const codes = res.body.data.map((wc) => wc.code);
+    expect(codes).to.include('umum');
   });
 }
