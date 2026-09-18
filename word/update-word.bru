@@ -1,0 +1,79 @@
+docs {
+Edit kata - PUT full replace (05-api-edit-kata.md). Role: admin/editor/
+root/reviewer. Body = bentuk create; related_words HANYA Form A
+(word_id) - Form B ditolak, buat kata lewat POST dulu lalu link.
+
+200 sukses: status per role (admin + published → langsung tayang,
+self-verified). Duplikat lemma dicek TERHADAP kata lain (diri sendiri
+diabaikan) → warnings bila ada.
+
+404 WORD_NOT_FOUND bila id tidak ada; 403 contributor.
+}
+
+meta {
+  name: Update Word
+  seq: 16
+}
+
+put {
+  url: {{baseUrl}}/api/v1/admin/words/{{word_id}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "language_id": "{{sambas_language_id}}",
+    "lemma": "makatn",
+    "notes": "Catatan revisi hasil edit",
+    "meanings": [
+      {
+        "word_class_id": "{{word_class_id}}",
+        "definition": "Aktivitas memasukkan makanan ke mulut (revisi)",
+        "order_index": 1,
+        "translations": [
+          {
+            "language_id": "{{indonesia_language_id}}",
+            "translation_text": "makan",
+            "translation_type": "direct"
+          }
+        ],
+        "examples": [
+          {
+            "source_language_id": "{{sambas_language_id}}",
+            "source_sentence": "Kami udah makatn tadi.",
+            "target_language_id": "{{indonesia_language_id}}",
+            "target_sentence": "Kami sudah makan tadi.",
+            "source_type": "native_speaker"
+          }
+        ]
+      }
+    ],
+    "word_type": "word",
+    "category_ids": [],
+    "related_words": [],
+    "status": "published"
+  }
+}
+
+tests {
+  test("200 + full replace terlihat (flow sama dengan add)", () => {
+    expect(res.status).to.equal(200);
+    expect(res.body.success).to.equal(true);
+    expect(res.body.data.word_id).to.have.lengthOf(26);
+    expect(res.body.data.lemma).to.equal('makatn');
+    expect(res.body.data.status).to.equal('published');
+    expect(res.body.data.is_verified).to.equal(true);
+    expect(res.body.data.updated_at).to.be.a('string');
+  });
+
+  test("lemma tidak berubah → TIDAK ada warnings duplikat (diri sendiri diabaikan)", () => {
+    if (res.body.data.warnings) {
+      expect(res.body.data.warnings).to.not.exist;
+    }
+  });
+}

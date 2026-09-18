@@ -1,0 +1,65 @@
+docs {
+Submit kata anonim DENGAN header X-Device-Id (varian per-device dari
+Submit Word (Anonim) - kontrak 06-api-x-device-id.md). Mobile mengirim
+ULID device (lihat docs/mobile/01-mobile-ulid-device-id.md) pada header
+ini; server memperlakukannya sebagai string opaque (tidak divalidasi
+format, cukup 8-64 karakter).
+
+Dual-bucket: 5 submit/jam per X-Device-Id (fairness manusia di balik
+CGNAT) + 20/jam per IP (langit-langit bot yang mengacak device id).
+
+201 sukses → bentuk sama dengan Submit Word (Anonim); 429 bila bucket
+device ATAU IP penuh (Retry-After disertakan).
+}
+meta {
+  name: Submit Word (Anonim, per-device)
+  seq: 9
+}
+
+post {
+  url: {{baseUrl}}/api/v1/contributions/words
+  body: json
+  auth: none
+}
+
+headers {
+  X-Device-Id: {{device_id}}
+}
+
+body:json {
+  {
+    "language_id": "{{sambas_language_id}}",
+    "lemma": "roboi",
+    "meanings": [
+      {
+        "word_class_id": "{{word_class_id}}",
+        "definition": "Istilah yang diusulkan pengunjung anonim",
+        "order_index": 1,
+        "translations": [
+          {
+            "language_id": "{{indonesia_language_id}}",
+            "translation_text": "usulan anonim",
+            "translation_type": "direct"
+          }
+        ]
+      }
+    ],
+    "word_type": "word",
+    "category_ids": [],
+    "related_words": []
+  }
+}
+
+script:pre-request {
+  // device id contoh (ULID) - di app asli digenerate sekali & disimpan
+  // flutter_secure_storage/shared_preferences, lihat docs/mobile/01
+  bru.setVar('device_id', '01DEVBRUNODEVICEID000000000');
+}
+
+tests {
+  test("201 + pending_review (bucket device 5/jam belum penuh)", () => {
+    expect(res.status).to.equal(201);
+    expect(res.body.data.status).to.equal('pending_review');
+    expect(res.body.data.is_verified).to.equal(false);
+  });
+}

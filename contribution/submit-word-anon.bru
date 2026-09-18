@@ -2,7 +2,9 @@ docs {
 Submit kata TANPA LOGIN (endpoint publik, 03-api-kontribusi-verifikasi.md):
 pengunjung anonim mengusulkan kata - atribusi ke user sistem Anonim
 (anonim@iamutaki.com), SELALU pending_review (masuk antrean review).
-Rate limit ketat: 5 submit/jam per IP (tier "publik tulis" Section 15).
+Rate limit dual-bucket (06-api-x-device-id.md, Section 15): 5 submit/jam
+per X-Device-Id + 20/jam per IP - varian TANPA header ini hanya dibatasi
+IP (lihat Submit Word (Anonim, per-device) untuk varian ber-header).
 
 Body = create-word TANPA field status (dipaksa kirim-review; draft anonim
 tidak bermakna). Response bentuknya sama dengan Create Word.
@@ -21,7 +23,7 @@ tidak bermakna). Response bentuknya sama dengan Create Word.
       }
     }
 
-429 kalau IP sudah submit 5x dalam sejam.
+429 kalau salah satu bucket penuh (Retry-After disertakan).
 }
 meta {
   name: Submit Word (Anonim)

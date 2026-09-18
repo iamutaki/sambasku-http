@@ -1,0 +1,33 @@
+docs {
+Detail kata SEMUA status - prefill form edit (05-api-edit-kata.md).
+Role: admin/editor/root/reviewer.
+
+200 sukses: bentuk sama dengan GET /words/:id publik + created_at/updated_at.
+Bedanya: draft/pending_review/rejected juga terbaca (publik hanya published).
+
+404 WORD_NOT_FOUND bila id tidak ada / sudah soft-deleted.
+}
+
+meta {
+  name: Get Admin Word Detail
+  seq: 15
+}
+
+get {
+  url: {{baseUrl}}/api/v1/admin/words/{{word_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+tests {
+  test("200 + envelope + field prefill", () => {
+    expect(res.status).to.equal(200);
+    expect(res.body.success).to.equal(true);
+    expect(res.body.data.id).to.have.lengthOf(26);
+    expect(res.body.data.status).to.be.oneOf(['draft', 'pending_review', 'published', 'rejected']);
+    expect(res.body.data.created_at).to.be.a('string');
+    expect(Array.isArray(res.body.data.meanings)).to.be.true;
+  });
+}
