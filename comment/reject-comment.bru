@@ -1,0 +1,44 @@
+docs {
+Tolak komentar (09-api-comment.md) - rejected (terminal), tidak pernah
+tampil publik. HANYA verifikator: admin/root/reviewer. TANPA kolom alasan
+(keputusan moderasi komentar tidak butuh justifikasi tertulis untuk
+penulis - beda dari kontribusi kata yang reject wajib comment).
+
+200 sukses:
+
+    {
+      "success": true,
+      "data": {
+        "id": "01J...",
+        "status": "rejected",
+        "reviewed_by": "01J...",
+        "reviewed_at": "2026-09-18T11:00:00.000Z"
+      }
+    }
+
+409 sudah diputuskan sebelumnya; 404 tidak ditemukan; 403 bukan
+verifikator. Audit trail mencatat action "reject".
+}
+
+meta {
+  name: Reject Comment
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}/api/v1/admin/comments/{{comment_id}}/reject
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+tests {
+  test("200 + rejected (terminal)", () => {
+    expect(res.status).to.equal(200);
+    expect(res.body.success).to.equal(true);
+    expect(res.body.data.status).to.equal("rejected");
+  });
+}

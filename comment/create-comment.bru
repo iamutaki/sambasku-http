@@ -1,0 +1,59 @@
+docs {
+Tulis komentar pada lemma (09-api-comment.md). Login wajib (semua role,
+termasuk contributor). Langsung pending_review - TIDAK tampil publik
+sampai admin approve (pre-moderation, approval gate Section 22).
+
+201 sukses (client menampilkan pesan "menunggu moderasi"):
+
+    {
+      "success": true,
+      "data": {
+        "id": "01J...",
+        "word_id": "01J...",
+        "user_id": "01J...",
+        "username": "kontributor",
+        "body": "Kata ini juga sering saya dengar di Sambas",
+        "status": "pending_review",
+        "created_at": "2026-09-18T10:00:00.000Z"
+      }
+    }
+
+400 body kosong/lebih dari 1000 karakter; 401 tanpa token; 404 kata tidak
+ditemukan / sudah dihapus; 429 lebih dari 30 komentar/menit per user.
+
+Audit trail mencatat action "create" (Section 21).
+}
+
+meta {
+  name: Create Comment
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/v1/words/{{word_id}}/comments
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{contributor_access_token}}
+}
+
+body:json {
+  {
+    "body": "Kata ini juga sering saya dengar di Sambas"
+  }
+}
+
+vars:post-response {
+  comment_id: res.body.data.id
+}
+
+tests {
+  test("201 + pending_review (belum tampil publik)", () => {
+    expect(res.status).to.equal(201);
+    expect(res.body.success).to.equal(true);
+    expect(res.body.data.status).to.equal("pending_review");
+    expect(res.body.data.word_id).to.equal(vars.word_id);
+  });
+}

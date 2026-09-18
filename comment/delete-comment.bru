@@ -1,0 +1,36 @@
+docs {
+Soft-delete komentar (09-api-comment.md). Login wajib. Yang boleh:
+PENULIS komentar itu sendiri, ATAU verifikator (admin/root/reviewer).
+Pakai comment_id dari request Create Comment (variable koleksi).
+
+200 sukses:
+
+    { "success": true, "data": null }
+
+403 user lain (bukan penulis, bukan verifikator); 404 komentar tidak
+ditemukan / sudah terhapus; 401 tanpa token.
+
+Komentar terhapus hilang dari semua list; jejak tetap ada di audit trail.
+}
+
+meta {
+  name: Delete Comment
+  seq: 3
+}
+
+delete {
+  url: {{baseUrl}}/api/v1/comments/{{comment_id}}
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{contributor_access_token}}
+}
+
+tests {
+  test("200 + data null (komentar disembunyikan)", () => {
+    expect(res.status).to.equal(200);
+    expect(res.body.success).to.equal(true);
+    expect(res.body.data).to.equal(null);
+  });
+}
