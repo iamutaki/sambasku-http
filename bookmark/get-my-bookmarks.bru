@@ -1,0 +1,51 @@
+docs {
+Daftar bookmark milik user login (16-api-bookmark.md) - halaman Bookmark
+di profil mobile. Cursor pagination: limit 1-50 (default 20), cursor =
+id bookmark item terakhir, urutan terbaru duluan. Login wajib (semua
+role).
+
+200 sukses:
+
+    {
+      "success": true,
+      "data": [
+        {
+          "word_id": "01J...",
+          "bookmarked_at": "2026-09-20T03:00:00.000Z",
+          "word": { "id": "01J...", "lemma": "makatn", "word_type": "word", "is_verified": true }
+        }
+      ],
+      "meta": { "limit": 20, "next_cursor": null, "has_more": false }
+    }
+
+Kata yang sudah di-soft-delete tidak ikut list. 400 limit/cursor tidak
+valid; 401 tanpa token.
+}
+
+meta {
+  name: Get My Bookmarks
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/v1/bookmarks/my?limit=20
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{contributor_access_token}}
+}
+
+tests {
+  test("200 + list bookmark dengan meta cursor", () => {
+    expect(res.status).to.equal(200);
+    expect(res.body.success).to.equal(true);
+    expect(res.body.data).to.be.an("array");
+    for (const b of res.body.data) {
+      expect(b.word_id).to.be.a("string");
+      expect(b.word.lemma).to.be.a("string");
+      expect(b.word.is_verified).to.be.a("boolean");
+    }
+    expect(res.body.meta.has_more).to.be.a("boolean");
+  });
+}

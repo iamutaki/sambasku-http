@@ -41,6 +41,7 @@ word/                  # POST admin/words (admin + contributor-pending), GET :id
                        #   word-classes, kontribusi media (pronounce/gambar/contoh)
 contribution/          # antrean review: list, detail, approve, reject, correct (Section 22)
 search-miss/           # pencarian kosong → peluang kontribusi di beranda + panel admin
+bookmark/              # toggle bookmark kata + daftar bookmark user login (16-api)
 misc/                  # ping (canary CI/CD - tanpa auth, tanpa DB)
 audit/                 # GET admin/audit-logs (admin & root)
 environments/local.bru # baseUrl + kredensial dev (NON-secret saja)
@@ -53,11 +54,12 @@ invocation terpisah tidak berbagi variable:
 
 ```bash
 cd http
-npx @usebruno/cli run --env local auth/ language/ word/ contribution/ search-miss/ category/ misc/ audit/
+npx @usebruno/cli run --env local auth/ language/ word/ contribution/ search-miss/ bookmark/ category/ misc/ audit/
 # urutan folder = urutan dependensi: login → var access_token + contributor_access_token;
 # languages → var sambas_language_id/indonesia_language_id; word memakai keduanya
 # (create word admin + contributor-pending + kontribusi media);
-# contribution memverifikasi hasil word; audit membaca jejak semuanya
+# contribution memverifikasi hasil word; bookmark memakai var word_id;
+# audit membaca jejak semuanya
 ```
 
 Butuh seed user contributor & reviewer: `pnpm seed` di repo api

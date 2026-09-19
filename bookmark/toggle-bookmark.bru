@@ -1,0 +1,61 @@
+docs {
+Toggle bookmark kata per user (16-api-bookmark.md).
+Login wajib (semua role, termasuk contributor). Pakai word_id dari request
+Create Word (variable koleksi).
+
+Semantik TOGGLE satu arah idempotent: sudah ada = lepas (is_bookmarked
+false, bookmarked_at null), belum ada = pasang. Response selalu membawa
+state final - jalankan request ini dua kali untuk melihat true → false.
+
+200 sukses (pasang pertama):
+
+    {
+      "success": true,
+      "data": {
+        "word_id": "01J...",
+        "is_bookmarked": true,
+        "bookmarked_at": "2026-09-20T03:00:00.000Z"
+      }
+    }
+
+404 kata tidak dikenal / sudah di-soft-delete:
+
+    { "success": false, "error_code": "WORD_NOT_FOUND", "message": "Kata tidak ditemukan atau sudah dihapus", "details": null }
+
+400 word_id bukan ULID 26 karakter
+401 tanpa token; 429 lebih dari 30 toggle/menit per user.
+
+TANPA audit trail per bookmark (keputusan 16: preseden vote - baris
+user-state volume tinggi, bukan aksi admin).
+}
+
+meta {
+  name: Toggle Bookmark
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/v1/bookmarks
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{contributor_access_token}}
+}
+
+body:json {
+  {
+    "word_id": "{{word_id}}"
+  }
+}
+
+tests {
+  test("200 + state final bookmark", () => {
+    expect(res.status).to.equal(200);
+    expect(res.body.success).to.equal(true);
+    expect(res.body.data.word_id).to.equal(vars.word_id);
+    // Jalankan dua kali: is_bookmarked true lalu false (toggle)
+    expect(res.body.data.is_bookmarked).to.be.a("boolean");
+  });
+}

@@ -1,0 +1,39 @@
+docs {
+Cek status bookmark batch by word_ids (16-api-bookmark.md) - state tombol
+bookmark di halaman detail kata. Mode ini TANPA meta pagination (has_more
+selalu implisit false). Login wajib (semua role).
+
+200 sukses (hanya kata yang di-bookmark user yang muncul):
+
+    {
+      "success": true,
+      "data": [
+        { "word_id": "01J...", "bookmarked_at": "2026-09-20T03:00:00.000Z", "word": { "id": "01J...", "lemma": "makatn", "word_type": "word", "is_verified": true } }
+      ]
+    }
+
+400 word_ids kosong / lebih dari 50 / bukan ULID; 401 tanpa token.
+}
+
+meta {
+  name: Get My Bookmarks Filtered
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/api/v1/bookmarks/my?word_ids={{word_id}}
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{contributor_access_token}}
+}
+
+tests {
+  test("200 + hanya kata yang di-bookmark user, tanpa meta", () => {
+    expect(res.status).to.equal(200);
+    expect(res.body.success).to.equal(true);
+    expect(res.body.data).to.be.an("array");
+    expect(res.body.meta).to.be.undefined;
+  });
+}
