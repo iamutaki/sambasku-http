@@ -1,0 +1,50 @@
+docs {
+Submit kontribusi anon dari kartu search-miss (12-api provenance).
+Body sama createWord anon + search_miss_id. Soft-check: lemma (atau
+terjemahan pertama) harus cocok miss.term.
+
+Prasyarat: ganti MISS_ID dengan id dari GET /search-misses; isi lemma
+atau translation sesuai direction miss.
+}
+
+meta {
+  name: Contribute From Search Miss
+  seq: 10
+}
+
+post {
+  url: {{baseUrl}}/api/v1/contributions/words
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "language_id": "{{sambasLanguageId}}",
+    "lemma": "{{missTerm}}",
+    "word_type": "word",
+    "search_miss_id": "{{missId}}",
+    "meanings": [
+      {
+        "word_class_id": "{{nounWordClassId}}",
+        "definition": "Definisi dari jalur search miss",
+        "order_index": 1,
+        "translations": [
+          {
+            "language_id": "{{indonesianLanguageId}}",
+            "translation_text": "terjemahan",
+            "translation_type": "direct"
+          }
+        ]
+      }
+    ],
+    "category_ids": [],
+    "related_words": []
+  }
+}
+
+assert {
+  res.status: 201
+  res.body.success: true
+  res.body.data.search_miss_id: {{missId}}
+}

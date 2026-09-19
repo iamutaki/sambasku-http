@@ -1,0 +1,39 @@
+docs {
+PATCH koreksi term dan/atau toggle is_visible (tayang beranda).
+Admin & root. Sample 200: docs/json/search-miss/update-search-miss.200.json
+Sample 409: docs/json/search-miss/update-search-miss.409.json
+
+Body minimal satu field:
+  { "term": "kalintia", "is_visible": true }
+}
+
+meta {
+  name: Update Search Miss
+  seq: 4
+}
+
+patch {
+  url: {{baseUrl}}/api/v1/admin/search-misses/{{search_miss_id}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "term": "kalintia",
+    "is_visible": true
+  }
+}
+
+tests {
+  test("200 + term ternormalisasi + is_visible", () => {
+    expect(res.status).to.equal(200);
+    expect(res.body.data).to.have.property('term');
+    expect(res.body.data).to.have.property('is_visible');
+    expect(res.body.data.is_visible).to.equal(true);
+  });
+}

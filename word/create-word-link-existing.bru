@@ -1,11 +1,11 @@
 docs {
-Regresi Form A — 01-api-tambah-kata.md: related_words dengan word_id menautkan
+Regresi Form A - 01-api-tambah-kata.md: related_words dengan word_id menautkan
 kata yang SUDAH ada (tanpa membuat kata baru inline). Bentuk ini TIDAK
 berubah oleh 04 (sinonim inline). Invers TIDAK disimpan: link induk → kata
 lama tampil sebagai related_words di detail induk; detail kata lama menampilkannya
 sebagai appears_in.
 
-201 sukses — response TANPA field inline_created_words (tidak ada Form B):
+201 sukses - response TANPA field inline_created_words (tidak ada Form B):
 
     {
       "success": true,
@@ -38,7 +38,7 @@ body:json {
   {
     "language_id": "{{sambas_language_id}}",
     "lemma": "sabayan bruno",
-    "notes": "Hanya tautan ke kata yang sudah ada (Form A — kontrak 01)",
+    "notes": "Hanya tautan ke kata yang sudah ada (Form A - kontrak 01)",
     "meanings": [
       {
         "word_class_id": "{{word_class_id}}",

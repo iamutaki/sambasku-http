@@ -1,0 +1,34 @@
+docs {
+Lookup definisi lemma dari KBBI (default provider dari env, atau
+?provider=raf555). Response distandarisasi (entries + suggestions).
+
+200: data.provider = "raf555" (id vendor yang melayani)
+401 / 502 / 503 sesuai kontrak 13.
+}
+
+meta {
+  name: Lookup Lemma Definition (KBBI)
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/v1/lemma-definitions/lookup?lemma=makan&provider=raf555
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+tests {
+  test("200 + found + suggestions dari raf555", () => {
+    expect(res.status).to.equal(200);
+    expect(res.body.success).to.equal(true);
+    expect(res.body.data.found).to.equal(true);
+    expect(res.body.data.provider).to.equal('raf555');
+    expect(res.body.data.suggestions.length).to.be.above(0);
+    expect(res.body.data.suggestions[0].definition).to.be.a('string');
+    expect(res.body.data.entries.length).to.be.above(0);
+  });
+}
