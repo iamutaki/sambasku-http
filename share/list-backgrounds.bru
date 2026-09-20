@@ -1,0 +1,38 @@
+docs {
+Proxy Unsplash untuk latar kartu share (publik, tanpa auth).
+Query sebaiknya padanan + kategori. page untuk shuffle batch.
+
+200: data.items[] (boleh kosong), page, degraded.
+400: q kosong.
+Kontrak: docs/api/22-api-share-backgrounds.md
+}
+
+meta {
+  name: List Share Backgrounds
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/v1/share/backgrounds?q=makan%20makanan&page=1
+  body: none
+  auth: none
+}
+
+tests {
+  test("200 + envelope items array + page", () => {
+    expect(res.status).to.equal(200);
+    expect(res.body.success).to.equal(true);
+    expect(res.body.data.query).to.be.a('string');
+    expect(res.body.data.page).to.equal(1);
+    expect(res.body.data.cache_hit).to.be.a('boolean');
+    expect(res.body.data.degraded).to.be.a('boolean');
+    expect(res.body.data.items).to.be.an('array');
+    if (res.body.data.items.length > 0) {
+      const item = res.body.data.items[0];
+      expect(item.url).to.be.a('string');
+      expect(item.photographer).to.be.a('string');
+      expect(item.username).to.be.a('string');
+      expect(item.unsplash_url).to.be.a('string');
+    }
+  });
+}

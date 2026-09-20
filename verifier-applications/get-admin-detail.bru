@@ -1,0 +1,29 @@
+docs {
+Detail pengajuan (20-api-verifier-application.md). Admin/root.
+Termasuk alamat teks dan tautan sosial (PII, bukan profil publik).
+}
+
+meta {
+  name: Get Verifier Application Detail (Admin)
+  seq: 5
+}
+
+get {
+  url: {{baseUrl}}/api/v1/admin/verifier-applications/{{verifier_application_id}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+tests {
+  test("200 + alamat + sosial", () => {
+    expect(res.status).to.equal(200);
+    expect(res.body.success).to.equal(true);
+    expect(res.body.data.address).to.be.a("string");
+    expect(res.body.data.social_links).to.be.an("array");
+    expect(res.body.data.phone).to.be.a("string");
+  });
+}

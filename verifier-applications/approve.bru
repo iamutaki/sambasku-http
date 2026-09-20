@@ -1,0 +1,32 @@
+docs {
+Setujui pengajuan: users.role = reviewer, revoke refresh, FCM
+(20-api-verifier-application.md). Hanya admin/root. Hanya status pending.
+}
+
+meta {
+  name: Approve Verifier Application
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}/api/v1/admin/verifier-applications/{{verifier_application_id}}/approve
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {}
+}
+
+tests {
+  test("200 + reviewer", () => {
+    expect(res.status).to.equal(200);
+    expect(res.body.success).to.equal(true);
+    expect(res.body.data.status).to.equal("approved");
+    expect(res.body.data.role).to.equal("reviewer");
+  });
+}

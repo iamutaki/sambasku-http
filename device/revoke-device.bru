@@ -1,0 +1,33 @@
+docs {
+Detach FCM token perangkat ini (logout). Soft-delete by udid + user login.
+Device lain milik user tetap aktif.
+
+Body:
+
+    { "udid": "device-stable-id" }
+
+200 (idempotent — revoked false jika sudah tidak aktif):
+
+    { "success": true, "data": { "udid": "device-stable-id", "revoked": true } }
+}
+
+meta {
+  name: Revoke Device Token
+  seq: 2
+}
+
+patch {
+  url: {{baseUrl}}/api/v1/device/revoke
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "udid": "{{deviceUdid}}"
+  }
+}

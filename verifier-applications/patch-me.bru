@@ -1,0 +1,53 @@
+docs {
+Perbaiki pengajuan yang ditolak (20-api-verifier-application.md).
+Hanya jika status rejected. Body sama POST. Status kembali pending.
+}
+
+meta {
+  name: Resubmit Verifier Application
+  seq: 3
+}
+
+patch {
+  url: {{baseUrl}}/api/v1/verifier-applications/me
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{contributor_access_token}}
+}
+
+body:json {
+  {
+    "phone": "81234567890",
+    "address": "Jl. Merdeka No. 1, Sambas, Kalimantan Barat",
+    "social_links": [
+      {
+        "platform": "instagram",
+        "username": "budi",
+        "screenshot": {
+          "url": "https://ik.imagekit.io/test/verifier-applications/budi.jpg",
+          "provider_file_id": "file_va_budi"
+        }
+      },
+      {
+        "platform": "website",
+        "username": "budi.example",
+        "screenshot": {
+          "url": "https://ik.imagekit.io/test/verifier-applications/budi-web.jpg",
+          "provider_file_id": "file_va_budi_web"
+        }
+      }
+    ]
+  }
+}
+
+tests {
+  test("200 + pending lagi", () => {
+    expect(res.status).to.equal(200);
+    expect(res.body.success).to.equal(true);
+    expect(res.body.data.status).to.equal("pending");
+    expect(res.body.data.admin_comment).to.equal(null);
+  });
+}

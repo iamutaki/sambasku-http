@@ -1,0 +1,37 @@
+docs {
+Daftarkan / update FCM token perangkat (login wajib).
+Satu user boleh banyak device (multi-device). Upsert by `udid`:
+token rotasi = panggil lagi dengan udid sama + fcm_token baru.
+
+Body:
+
+    { "udid": "device-stable-id", "fcm_token": "fcm-..." }
+
+200:
+
+    { "success": true, "data": { "udid": "device-stable-id" } }
+
+401 tanpa token; 400 body kosong; 429 >30/menit.
+}
+
+meta {
+  name: Register Device Token
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/v1/device/register
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "udid": "{{deviceUdid}}",
+    "fcm_token": "{{fcmToken}}"
+  }
+}

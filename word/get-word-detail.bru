@@ -16,6 +16,9 @@ tayang di sini - hanya lewat layar review antrean (Section 22).
         "status": "published",
         "is_verified": true,
         "is_corrected": false,
+        "self_verified": true,
+        "verified_by": { "username": "budi", "role": "reviewer" },
+        "verified_at": "2026-09-12T03:00:00.000Z",
         "meanings": [
           {
             "id": "01JDMeaning0000000000000",
@@ -79,5 +82,7 @@ tests {
     expect(res.body.data.pronunciations[0].value).to.equal('/makatn/');
     expect(res.body.data.images[0]).to.have.property('url');
     expect(res.body.data.images[0].is_primary).to.equal(true);
+    expect(res.body.data).to.have.property('verified_by');
+    expect(res.body.data).to.have.property('verified_at');
   });
 }

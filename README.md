@@ -37,6 +37,7 @@ frontend / fixture test. Blok docs Bruno harus tetap sinkron dengannya.
 auth/                  # endpoint modul auth + Login Contributor (var contributor_access_token)
 language/              # GET languages + dialects (menyimpan var sambas_language_id dst.)
 category/              # GET categories
+share/                 # GET share/backgrounds (Unsplash proxy, publik) — 22-api
 word/                  # POST admin/words (admin + contributor-pending), GET :id, search,
                        #   word-classes, kontribusi media (pronounce/gambar/contoh)
 contribution/          # antrean review: list, detail, approve, reject, correct (Section 22)

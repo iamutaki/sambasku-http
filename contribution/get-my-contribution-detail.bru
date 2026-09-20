@@ -1,0 +1,24 @@
+docs {
+Detail satu usulan milik user login. Path :kind = contribution|suggestion.
+Bukan milik pemohon → 404.
+}
+
+meta {
+  name: Get My Contribution Detail
+  seq: 11
+}
+
+get {
+  url: {{baseUrl}}/api/v1/contributions/my/contribution/{{contribution_id}}
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{contributor_access_token}}
+}
+
+tests {
+  test("200 detail milik pemohon atau 404", () => {
+    expect([200, 404]).to.include(res.status);
+  });
+}
