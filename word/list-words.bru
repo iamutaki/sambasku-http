@@ -1,0 +1,46 @@
+docs {
+  Daftar semua kata A-Z publik (18-api-list-words.md) - browsing, bukan
+  pencarian. Cursor komposit (lemma, id) base64url - BEDA dari ULID
+  /words/search; client memperlakukan cursor sebagai opaque.
+
+200 sukses:
+
+    {
+      "success": true,
+      "data": [
+        { "id": "01JD...", "lemma": "apam", "language_id": "01JD...", "language_code": "SBS", "word_type": "word", "is_verified": true, "status": "published" }
+      ],
+      "meta": { "limit": 20, "next_cursor": "YnVkdQAwMUpE...", "has_more": true }
+    }
+
+400 VALIDATION_ERROR saat cursor invalid (details[0].field = "cursor").
+}
+
+meta {
+  name: List Words A-Z
+  seq: 18
+}
+
+get {
+  url: {{baseUrl}}/api/v1/words
+  body: none
+  auth: none
+}
+
+query {
+  limit: 20
+}
+
+tests {
+  test("status 200 + urut A-Z + envelope list + meta (Section 13)", () => {
+    expect(res.status).to.equal(200);
+    expect(res.body.success).to.equal(true);
+    expect(res.body.data).to.be.an('array');
+    const lemmas = res.body.data.map((w) => w.lemma);
+    const sorted = [...lemmas].sort();
+    expect(lemmas).to.eql(sorted);
+    expect(res.body.data.every((w) => w.status === 'published')).to.equal(true);
+    expect(res.body.meta).to.have.property('limit', 20);
+    expect(res.body.meta).to.have.property('has_more');
+  });
+}

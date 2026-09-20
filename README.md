@@ -54,12 +54,14 @@ invocation terpisah tidak berbagi variable:
 
 ```bash
 cd http
-npx @usebruno/cli run --env local auth/ language/ word/ contribution/ search-miss/ bookmark/ category/ misc/ audit/
+npx @usebruno/cli run --env local auth/ language/ word/list-word-classes.bru word/create-word.bru bookmark/ word/ contribution/ search-miss/ category/ misc/ audit/
 # urutan folder = urutan dependensi: login → var access_token + contributor_access_token;
 # languages → var sambas_language_id/indonesia_language_id; word memakai keduanya
 # (create word admin + contributor-pending + kontribusi media);
-# contribution memverifikasi hasil word; bookmark memakai var word_id;
-# audit membaca jejak semuanya
+# bookmark HARUS sebelum folder word/ selesai - var word_id dipakai ulang oleh
+# request create lain dan akhirnya di-soft-delete delete-word.bru (toggle jadi 404);
+# contribution memverifikasi hasil word; audit membaca jejak semuanya
+# NOTE: login dibatasi 5x/15 menit per IP - jangan menjalankan koleksi berulang cepat
 ```
 
 Butuh seed user contributor & reviewer: `pnpm seed` di repo api
