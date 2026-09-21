@@ -1,0 +1,29 @@
+docs {
+Jumlah notifikasi belum dibaca milik user login
+(23-api-notifications.md). Login wajib.
+
+200: { "success": true, "data": { "unread_count": 2 } }
+401 tanpa token.
+}
+
+meta {
+  name: Unread Notification Count
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/v1/notifications/unread-count
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{contributor_access_token}}
+}
+
+tests {
+  test("200 + unread_count angka", () => {
+    expect(res.status).to.equal(200);
+    expect(res.body.success).to.equal(true);
+    expect(res.body.data.unread_count).to.be.a("number");
+  });
+}

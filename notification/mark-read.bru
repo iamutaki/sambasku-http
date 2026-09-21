@@ -1,0 +1,29 @@
+docs {
+Tandai satu notifikasi sebagai dibaca. Idempotent.
+Bukan milik pemohon → 404 NOTIFICATION_NOT_FOUND.
+
+200: { "success": true, "data": { "id": "01J...", "already_read": false } }
+}
+
+meta {
+  name: Mark Notification Read
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/v1/notifications/{{notification_id}}/read
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{contributor_access_token}}
+}
+
+tests {
+  test("200 mark read", () => {
+    expect(res.status).to.equal(200);
+    expect(res.body.success).to.equal(true);
+    expect(res.body.data.id).to.be.a("string");
+    expect(res.body.data.already_read).to.be.a("boolean");
+  });
+}
