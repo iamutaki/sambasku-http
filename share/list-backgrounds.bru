@@ -1,6 +1,6 @@
 docs {
-Proxy Unsplash/Pexels untuk latar kartu share (publik, tanpa auth).
-Query sebaiknya padanan + kategori. Default media=photo provider=unsplash.
+Proxy Pexels/Pixabay/Unsplash untuk latar kartu share (publik, tanpa auth).
+Query sebaiknya padanan + kategori. Default media=photo provider=pexels.
 
 200: data.items[], page, degraded, media.
 400: q kosong.
@@ -27,6 +27,7 @@ tests {
     expect(res.body.data.cache_hit).to.be.a('boolean');
     expect(res.body.data.degraded).to.be.a('boolean');
     expect(res.body.data.media).to.equal('photo');
+    expect(res.body.data.provider).to.equal('pexels');
     expect(res.body.data.items).to.be.an('array');
     if (res.body.data.items.length > 0) {
       const item = res.body.data.items[0];

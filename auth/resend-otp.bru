@@ -1,0 +1,27 @@
+meta {
+  name: Resend OTP
+  seq: 13
+}
+
+post {
+  url: {{baseUrl}}/api/v1/auth/resend-otp
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "email": "bruno@test.com"
+  }
+}
+
+tests {
+  test("200 anti-enumeration atau 429 cooldown", () => {
+    expect([200, 429]).to.include(res.status);
+    if (res.status === 200) {
+      expect(res.body.success).to.equal(true);
+    } else {
+      expect(res.body.error_code).to.equal('RATE_LIMITED');
+    }
+  });
+}

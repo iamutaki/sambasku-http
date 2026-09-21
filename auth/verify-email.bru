@@ -1,0 +1,30 @@
+meta {
+  name: Verify email OTP
+  seq: 12
+}
+
+post {
+  url: {{baseUrl}}/api/v1/auth/verify-email
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "email": "bruno@test.com",
+    "code": "482-917",
+    "client_type": "mobile"
+  }
+}
+
+tests {
+  test("200 login envelope atau 401 OTP", () => {
+    expect([200, 401]).to.include(res.status);
+    if (res.status === 200) {
+      expect(res.body.success).to.equal(true);
+      expect(res.body.data.access_token).to.be.a('string');
+    } else {
+      expect(['INVALID_OTP', 'OTP_EXPIRED']).to.include(res.body.error_code);
+    }
+  });
+}

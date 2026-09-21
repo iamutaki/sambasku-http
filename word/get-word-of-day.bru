@@ -1,0 +1,48 @@
+docs {
+Kata hari ini - publik, tanpa auth. Satu kata published per tanggal WIB.
+Response = detail kata + date + is_new_this_week. Korpus kosong = data null.
+
+200 sukses (ada kata):
+
+    {
+      "success": true,
+      "data": {
+        "id": "01JDWORDMAKATN000000000000",
+        "lemma": "makatn",
+        "date": "2026-09-21",
+        "is_new_this_week": false,
+        "...": "field detail sama dengan GET /words/:id"
+      }
+    }
+
+200 korpus kosong:
+
+    { "success": true, "data": null }
+
+Kontrak: docs/api/28-api-word-of-the-day.md
+}
+
+meta {
+  name: Get Word Of Day
+  seq: 15
+}
+
+get {
+  url: {{baseUrl}}/api/v1/words/today
+  body: none
+  auth: none
+}
+
+tests {
+  test("status 200 + envelope; data null atau detail + date", () => {
+    expect(res.status).to.equal(200);
+    expect(res.body.success).to.equal(true);
+    if (res.body.data === null) {
+      return;
+    }
+    expect(res.body.data.lemma).to.be.a('string');
+    expect(res.body.data.date).to.match(/^\d{4}-\d{2}-\d{2}$/);
+    expect(res.body.data.is_new_this_week).to.be.a('boolean');
+    expect(res.body.data.meanings).to.be.an('array');
+  });
+}

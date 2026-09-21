@@ -25,5 +25,6 @@ tests {
     expect(res.body.data.address).to.be.a("string");
     expect(res.body.data.social_links).to.be.an("array");
     expect(res.body.data.phone).to.be.a("string");
+    expect(res.body.data).to.have.property("reviewed_by_username");
   });
 }
