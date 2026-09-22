@@ -1,0 +1,38 @@
+docs {
+Riwayat vote milik user login (26-api-my-votes.md). Bukan pengganti
+GET /votes/my?targets=. word null jika kata induk hilang atau terhapus.
+
+200 sukses: docs/json/vote/vote-history.200.json
+}
+
+meta {
+  name: Vote History
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/api/v1/votes/history?limit=20
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{contributor_access_token}}
+}
+
+tests {
+  test("200 + cursor meta + word nullable", () => {
+    expect(res.status).to.equal(200);
+    expect(res.body.success).to.equal(true);
+    expect(res.body.data).to.be.an("array");
+    expect(res.body.meta).to.have.property("has_more");
+    for (const vote of res.body.data) {
+      expect(["word", "meaning", "example", "pronunciation", "word_image", "comment"]).to.include(vote.target_type);
+      expect([1, -1]).to.include(vote.value);
+      expect(vote).to.have.property("voted_at");
+      if (vote.word !== null) {
+        expect(vote.word).to.have.property("lemma");
+        expect(vote.word).to.have.property("is_verified");
+      }
+    }
+  });
+}

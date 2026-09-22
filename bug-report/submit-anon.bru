@@ -1,0 +1,38 @@
+docs {
+Kirim laporan tanpa login (30-api-bug-reports.md). user_id null, device_id
+dari X-Device-Id. Keterangan wajib 10-2000. Sample:
+docs/json/bug-report/submit.200.json
+}
+
+meta {
+  name: Submit Bug Report (Anonim)
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/v1/bug-reports
+  body: json
+  auth: none
+}
+
+headers {
+  X-Device-Id: 01JDDEVICEBUG000000000000
+}
+
+body:json {
+  {
+    "description": "Tombol upvote tidak merespons di halaman detail kata",
+    "images": [],
+    "app_version": "0.1.0",
+    "platform": "android"
+  }
+}
+
+tests {
+  test("200 + open + is_anonymous true", () => {
+    expect(res.status).to.equal(200);
+    expect(res.body.data.status).to.equal('open');
+    expect(res.body.data.is_anonymous).to.equal(true);
+    expect(res.body.data.id).to.have.lengthOf(26);
+  });
+}

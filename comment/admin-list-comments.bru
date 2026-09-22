@@ -1,29 +1,6 @@
 docs {
-Antrean moderasi komentar (09-api-comment.md) - HANYA verifikator:
-admin/root/reviewer (pola antrean kontribusi 03). Filter status (default
-pending_review), cursor pagination.
-
-200 sukses:
-
-    {
-      "success": true,
-      "data": [
-        {
-          "id": "01J...",
-          "word_id": "01J...",
-          "user_id": "01J...",
-          "username": "kontributor",
-          "body": "Kata ini juga sering saya dengar di Sambas",
-          "status": "pending_review",
-          "reviewed_by": null,
-          "reviewed_at": null,
-          "created_at": "2026-09-18T10:00:00.000Z"
-        }
-      ],
-      "meta": { "limit": 20, "next_cursor": null, "has_more": false }
-    }
-
-401 tanpa token; 403 contributor/editor.
+List komentar admin (09-api-comment.md). Filter status:
+published | taken_down | deleted_by_author.
 }
 
 meta {
@@ -32,7 +9,7 @@ meta {
 }
 
 get {
-  url: {{baseUrl}}/api/v1/admin/comments?status=pending_review
+  url: {{baseUrl}}/api/v1/admin/comments?status=published
   auth: bearer
 }
 
@@ -41,12 +18,12 @@ auth:bearer {
 }
 
 tests {
-  test("200 + antrean dengan info moderasi", () => {
+  test("200 + list dengan status valid", () => {
     expect(res.status).to.equal(200);
     expect(res.body.success).to.equal(true);
     expect(res.body.data).to.be.an("array");
     for (const cm of res.body.data) {
-      expect(["pending_review", "published", "rejected"]).to.include(cm.status);
+      expect(["published", "taken_down", "deleted_by_author"]).to.include(cm.status);
     }
   });
 }

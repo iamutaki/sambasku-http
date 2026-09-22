@@ -1,0 +1,38 @@
+docs {
+Kirim laporan dengan Bearer. is_anonymous false. Rate 5/jam per user_id.
+}
+
+meta {
+  name: Submit Bug Report (Auth)
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/v1/bug-reports
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+headers {
+  X-Device-Id: 01JDDEVICEBUG000000000000
+}
+
+body:json {
+  {
+    "description": "Halaman detail kata blank setelah rotasi layar",
+    "app_version": "0.1.0",
+    "platform": "android"
+  }
+}
+
+tests {
+  test("200 + is_anonymous false", () => {
+    expect(res.status).to.equal(200);
+    expect(res.body.data.status).to.equal('open');
+    expect(res.body.data.is_anonymous).to.equal(false);
+  });
+}

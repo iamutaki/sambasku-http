@@ -1,0 +1,38 @@
+docs {
+Selesaikan atau tolak laporan. Status terminal. Id sudah selesai → 404
+BUG_REPORT_NOT_FOUND. Sample sukses: docs/json/bug-report/resolve.200.json
+gagal: docs/json/bug-report/resolve.404.json
+}
+
+meta {
+  name: Admin Resolve Bug Report
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/api/v1/admin/bug-reports/{{bug_report_id}}/resolve
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "status": "resolved",
+    "note": "Sudah diperbaiki"
+  }
+}
+
+tests {
+  test("200 resolved ATAU 404 BUG_REPORT_NOT_FOUND", () => {
+    expect([200, 404]).to.include(res.status);
+    if (res.status === 200) {
+      expect(res.body.data.status).to.equal('resolved');
+    } else {
+      expect(res.body.error_code).to.equal('BUG_REPORT_NOT_FOUND');
+    }
+  });
+}

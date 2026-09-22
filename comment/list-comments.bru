@@ -1,29 +1,6 @@
 docs {
-Komentar yang tampil publik pada sebuah kata (09-api-comment.md) - hanya
-status published (pre-moderation), terbaru dulu, cursor pagination.
-Publik, tanpa login. Pakai word_id dari request Create Word.
-
-200 sukses:
-
-    {
-      "success": true,
-      "data": [
-        {
-          "id": "01J...",
-          "word_id": "01J...",
-          "user_id": "01J...",
-          "username": "budi",
-          "body": "Kata ini juga sering saya dengar di Sambas",
-          "created_at": "2026-09-18T10:00:00.000Z",
-          "upvotes": 3,
-          "downvotes": 0
-        }
-      ],
-      "meta": { "limit": 20, "next_cursor": null, "has_more": false }
-    }
-
-username null = penulis sudah terhapus (client menampilkan "pengguna
-terhapus"). upvotes/downvotes = vote pada komentar (target vote 'comment').
+Komentar pada sebuah kata (09-api-comment.md): published | taken_down |
+deleted_by_author. Body null untuk non-published. Sertakan status + votes.
 }
 
 meta {
@@ -36,14 +13,18 @@ get {
 }
 
 tests {
-  test("200 + hanya komentar published + vote counts", () => {
+  test("200 + status + vote counts", () => {
     expect(res.status).to.equal(200);
     expect(res.body.success).to.equal(true);
     expect(res.body.data).to.be.an("array");
-    expect(res.body.meta).to.have.property("has_more");
     for (const cm of res.body.data) {
-      expect(cm.status).to.be.undefined; // status TIDAK diekspos ke publik
+      expect(["published", "taken_down", "deleted_by_author"]).to.include(cm.status);
       expect(cm.upvotes).to.be.a("number");
+      if (cm.status === "published") {
+        expect(cm.body).to.be.a("string");
+      } else {
+        expect(cm.body).to.equal(null);
+      }
     }
   });
 }

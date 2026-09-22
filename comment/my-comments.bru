@@ -1,0 +1,38 @@
+docs {
+Komentar milik user login (27-api-my-comments.md). Status
+published | taken_down | deleted_by_author. Body utuh untuk penulis.
+Tanpa user_id, username, reviewed_by, dan vote counts.
+
+200 sukses: docs/json/comment/my-comments.200.json
+}
+
+meta {
+  name: My Comments
+  seq: 6
+}
+
+get {
+  url: {{baseUrl}}/api/v1/comments/my?limit=20
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{contributor_access_token}}
+}
+
+tests {
+  test("200 + body utuh, tanpa identitas penulis", () => {
+    expect(res.status).to.equal(200);
+    expect(res.body.success).to.equal(true);
+    expect(res.body.data).to.be.an("array");
+    expect(res.body.meta).to.have.property("has_more");
+    for (const cm of res.body.data) {
+      expect(["published", "taken_down", "deleted_by_author"]).to.include(cm.status);
+      expect(cm.body).to.be.a("string");
+      expect(cm).to.not.have.property("user_id");
+      expect(cm).to.not.have.property("username");
+      expect(cm).to.not.have.property("reviewed_by");
+      expect(cm).to.not.have.property("upvotes");
+    }
+  });
+}

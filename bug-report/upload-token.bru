@@ -1,0 +1,33 @@
+docs {
+Token upload publik untuk lampiran laporan masalah. Query folder wajib
+`/bug-reports`. Folder lain → 400. ImageKit belum dikonfigurasi → 503
+IMAGE_UPLOAD_UNAVAILABLE. Tanpa auth. Sample:
+docs/json/bug-report/upload-token.200.json
+}
+
+meta {
+  name: Bug Report Upload Token
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/v1/bug-reports/upload-token?folder=/bug-reports
+  body: none
+  auth: none
+}
+
+headers {
+  X-Device-Id: 01JDDEVICEBUG000000000000
+}
+
+tests {
+  test("200 kredensial ATAU 503 IMAGE_UPLOAD_UNAVAILABLE", () => {
+    expect([200, 503]).to.include(res.status);
+    if (res.status === 200) {
+      expect(res.body.data.token).to.be.a('string');
+      expect(res.body.data.upload_endpoint).to.contain('imagekit');
+    } else {
+      expect(res.body.error_code).to.equal('IMAGE_UPLOAD_UNAVAILABLE');
+    }
+  });
+}

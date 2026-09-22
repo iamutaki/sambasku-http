@@ -1,0 +1,56 @@
+docs {
+Masuk dengan Google (ID token). V1: client_type mobile.
+
+200 sukses (mobile):
+
+    {
+      "success": true,
+      "data": {
+        "access_token": "eyJhbGciOiJSUzI1NiJ9...",
+        "expires_in": 900,
+        "refresh_token": "8f3a...",
+        "user": { "id": "01JD...", "username": "...", "role": "contributor" }
+      }
+    }
+
+401 INVALID_GOOGLE_TOKEN (token / iss / aud / akun nonaktif):
+
+    { "success": false, "error_code": "INVALID_GOOGLE_TOKEN", "message": "Tidak bisa masuk dengan Google.", "details": null }
+
+409 EMAIL_ALREADY_EXISTS (email sudah di users, belum ada identity Google):
+
+    { "success": false, "error_code": "EMAIL_ALREADY_EXISTS", "message": "Email sudah terdaftar. Masuk dengan password atau gunakan lupa password.", "details": null }
+
+503 GOOGLE_AUTH_UNAVAILABLE (GOOGLE_CLIENT_ID kosong):
+
+    { "success": false, "error_code": "GOOGLE_AUTH_UNAVAILABLE", "message": "Masuk dengan Google sedang tidak tersedia.", "details": null }
+}
+
+meta {
+  name: Login Google
+  seq: 9
+}
+
+post {
+  url: {{baseUrl}}/api/v1/auth/google
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "id_token": "{{google_id_token}}",
+    "client_type": "mobile"
+  }
+}
+
+tests {
+  test("status 200 + refresh_token di body, TANPA Set-Cookie", () => {
+    expect(res.status).to.equal(200);
+    expect(res.body.data.refresh_token).to.be.a('string');
+    expect(res.body.data.access_token).to.exist;
+    const raw = res.headers['set-cookie'];
+    const setCookies = Array.isArray(raw) ? raw : raw ? [raw] : [];
+    expect(setCookies.length).to.equal(0);
+  });
+}
