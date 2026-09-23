@@ -1,82 +1,97 @@
-# sambasku-http
+<p align="center">
+  <img src="logo.png" alt="SambasKu" width="320" />
+</p>
 
-Koleksi [Bruno](https://usebruno.com) untuk menguji fungsional API Kamus
-Digital Sambas-Indonesia - tersimpan sebagai plain file `.bru` di git.
+# SambasKu HTTP
+
+Koleksi [Bruno](https://usebruno.com) untuk menguji fungsional API
+**Kamus Digital Sambas-Indonesia**. Disimpan sebagai plain file `.bru`
+di git (bukan Postman export).
+
+Acuan sinkronisasi: `docs/api/api-base-stack.md` Section 20 di repo
+[sambasku-docs](https://github.com/iamutaki/sambasku-docs).
 
 ## Cara pakai
 
-1. Install [Bruno](https://usebruno.com) (CLI: `brew install brunos` / GUI desktop)
+1. Install [Bruno](https://usebruno.com) (CLI: `brew install bruno` /
+   GUI desktop)
 2. Buka folder ini sebagai collection (File → Open Collection)
-3. Pilih environment **local** (server API jalan di `http://localhost:3000`)
+3. Pilih environment **local** (API di `http://localhost:3000`)
 4. Jalankan berurutan: `Register` → `Login` → request lain
-   (Login otomatis menyimpan `access_token` + `refresh_token` sebagai
-   collection variable untuk request berikutnya)
+   (Login menyimpan `access_token` + `refresh_token` sebagai collection
+   variable untuk request berikutnya)
 
 CLI:
 
 ```bash
 cd http
-bruno run --env local auth/          # jalankan folder auth
+npx @usebruno/cli run --env local auth/
 ```
 
-## Melihat Sample Response
+Butuh seed user (admin / contributor / reviewer): `pnpm seed` di repo
+[sambasku-api](https://github.com/iamutaki/sambasku-api). Kredensial non-secret
+ada di `environments/local.bru`.
 
-Request-request kunci (login, create-word, get-word-detail, search,
-create-peribahasa, audit-logs, languages) punya blok `docs { }` berisi
-markdown + contoh JSON response - buka request di Bruno GUI lalu pilih
-tab **Docs** di panel kanan untuk melihat bentuk responsenya tanpa
-menjalankan request.
+## Sample response
 
-Sumber kanonik contoh response (semua endpoint + semua kasus, sebagai
-file JSON valid): `docs/json/` di repo docs - dipakai untuk mock
-frontend / fixture test. Blok docs Bruno harus tetap sinkron dengannya.
+Request kunci punya blok `docs { }` (markdown + contoh JSON). Di Bruno
+GUI: buka request → tab **Docs**.
+
+Sumber kanonik semua kasus: `docs/json/` di
+[sambasku-docs](https://github.com/iamutaki/sambasku-docs). Blok docs Bruno
+harus sinkron dengannya.
 
 ## Struktur
 
 ```text
-auth/                  # endpoint modul auth + Login Contributor (var contributor_access_token)
-language/              # GET languages + dialects (menyimpan var sambas_language_id dst.)
-category/              # GET categories
-share/                 # GET share/backgrounds (Unsplash proxy, publik) — 22-api
-word/                  # POST admin/words (admin + contributor-pending), GET :id, search,
-                       #   word-classes, kontribusi media (pronounce/gambar/contoh)
-contribution/          # antrean review: list, detail, approve, reject, correct (Section 22)
-search-miss/           # pencarian kosong → peluang kontribusi di beranda + panel admin
-bookmark/              # toggle bookmark kata + daftar bookmark user login (16-api)
-misc/                  # ping (canary CI/CD - tanpa auth, tanpa DB)
-audit/                 # GET admin/audit-logs (admin & root)
-environments/local.bru # baseUrl + kredensial dev (NON-secret saja)
+auth/                     # register, login (web/mobile/google/facebook), OTP, refresh, logout
+language/                 # languages + dialects (var sambas_language_id, …)
+category/                 # categories
+word/                     # CRUD admin, search, media (pronounce / gambar / contoh), WOTD
+image/                    # upload-token ImageKit + POST /images (GitHub sambasku-images)
+users/                    # profil publik, activity, avatar
+contribution/             # antrean review: list, detail, approve, reject, correct
+search-miss/              # pencarian kosong + dismiss admin
+bookmark/                 # toggle + daftar bookmark
+vote/                     # toggle, counts, my, history
+comment/                  # publik + moderasi admin + blocklist
+verifier-applications/    # pengajuan + keputusan admin
+share/                    # GET share/backgrounds (proxy gambar/video publik)
+notification/             # inbox + mark read
+bug-report/               # submit + admin resolve + upload-token
+device/                   # registrasi device / FCM
+lemma-definition/         # definisi lemma terkait
+misc/                     # ping (canary CI/CD)
+audit/                    # GET admin/audit-logs
+environments/local.bru    # baseUrl + kredensial dev (NON-secret)
 ```
 
-### Menjalankan seluruh koleksi (variable berantai antar folder)
+### Menjalankan seluruh koleksi (variable berantai)
 
-WAJIB satu invocation - `bru.setVar` hanya hidup dalam satu proses,
+WAJIB satu invocation. `bru.setVar` hanya hidup dalam satu proses;
 invocation terpisah tidak berbagi variable:
 
 ```bash
 cd http
 npx @usebruno/cli run --env local auth/ language/ word/list-word-classes.bru word/create-word.bru bookmark/ word/ contribution/ search-miss/ category/ misc/ audit/
-# urutan folder = urutan dependensi: login → var access_token + contributor_access_token;
-# languages → var sambas_language_id/indonesia_language_id; word memakai keduanya
-# (create word admin + contributor-pending + kontribusi media);
-# bookmark HARUS sebelum folder word/ selesai - var word_id dipakai ulang oleh
-# request create lain dan akhirnya di-soft-delete delete-word.bru (toggle jadi 404);
-# contribution memverifikasi hasil word; audit membaca jejak semuanya
-# NOTE: login dibatasi 5x/15 menit per IP - jangan menjalankan koleksi berulang cepat
 ```
 
-Butuh seed user contributor & reviewer: `pnpm seed` di repo api
-(kredensial di environments/local.bru).
+Urutan = dependensi: login → token; languages → id bahasa; word memakai
+keduanya; bookmark sebelum soft-delete kata; contribution memverifikasi
+hasil; audit membaca jejak.
+
+Login dibatasi 5x / 15 menit per IP. Jangan menjalankan koleksi berulang
+cepat.
 
 ## Aturan sinkronisasi (WAJIB)
 
-Setiap penambahan/perubahan endpoint di `api/` **wajib** diikuti
-penambahan/perubahan file `.bru` di collection ini dalam PR yang sama
-- lihat `docs/api/api-base-stack.md` Section 20:
+Setiap penambahan/perubahan endpoint di `api/` **wajib** diikuti file
+`.bru` di collection ini dalam PR yang sama:
 
-- Endpoint baru → buat `nama-modul/nama-endpoint.bru` + minimal 1 `tests`
+- Endpoint baru → `nama-modul/nama-endpoint.bru` + minimal 1 `tests`
 - Field request/response berubah → update body + assertion
 - Endpoint dihapus → hapus file `.bru`-nya
+- Sample JSON di `docs/json/` ikut diupdate
 
-Environment selain `local` (staging/production) TIDAK di-commit -
-kredensial sungguhan dikelola lokal via fitur environment Bruno.
+Environment selain `local` (staging/production) **tidak** di-commit.
+Kredensial sungguhan dikelola lokal lewat environment Bruno.

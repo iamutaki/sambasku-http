@@ -1,12 +1,23 @@
 docs {
-Pencarian Indonesia ke Sambas (search_in=translation) - cari kata Sambas dari terjemahannya. Item punya matched_translation.
+Pencarian Indonesia ke Sambas (search_in=translation) - cari kata Sambas dari terjemahannya.
+Item punya matched_translation + sense (gloss `[n] makan,…` sama A-Z).
 
 200 sukses:
 
     {
       "success": true,
       "data": [
-        { "id": "01JD...", "lemma": "makatn", "language_id": "01JD...", "language_code": "SBS", "word_type": "word", "is_verified": false, "status": "published", "matched_translation": "makan" }
+        {
+          "id": "01JD...",
+          "lemma": "makatn",
+          "language_id": "01JD...",
+          "language_code": "SBS",
+          "word_type": "word",
+          "is_verified": true,
+          "status": "published",
+          "matched_translation": "makan",
+          "sense": "[n] makan"
+        }
       ],
       "meta": { "limit": 20, "next_cursor": null, "has_more": false }
     }
@@ -30,6 +41,7 @@ tests {
     const hit = res.body.data.find((w) => w.lemma === 'makatn');
     expect(hit).to.exist;
     expect(hit.matched_translation).to.equal('makan');
+    expect(hit).to.have.property('sense');
   });
 
   test("meta cursor-based tetap berlaku", () => {

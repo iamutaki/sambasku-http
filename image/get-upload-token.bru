@@ -3,6 +3,16 @@ meta {
   seq: 1
 }
 
+docs {
+Token DIRECT UPLOAD ImageKit untuk konten **privat**: folder
+`/verifier-applications` (bukti pengajuan) atau folder lain yang
+diizinkan admin token. Gambar kata / avatar **tidak** memakai endpoint
+ini — pakai `POST /api/v1/images` dan `POST /users/me/avatar`.
+
+200 kredensial ATAU 503 IMAGE_UPLOAD_UNAVAILABLE.
+}
+
+
 get {
   url: {{baseUrl}}/api/v1/admin/images/upload-token?folder=/words
   body: none

@@ -1,0 +1,27 @@
+docs {
+Hapus avatar user login. Mengosongkan kolom users.avatar_* dan
+menghapus file GitHub (best-effort).
+
+204 No Content sukses.
+}
+
+meta {
+  name: Delete Avatar
+  seq: 3
+}
+
+delete {
+  url: {{baseUrl}}/api/v1/users/me/avatar
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+tests {
+  test("204 avatar dihapus", () => {
+    expect(res.status).to.equal(204);
+  });
+}

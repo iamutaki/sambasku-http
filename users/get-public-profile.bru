@@ -12,9 +12,11 @@ setelah decode). Email/phone/hash/is_active tidak pernah tampil.
         "role": "reviewer",
         "is_verifier": true,
         "joined_at": "2026-08-01T00:00:00.000Z",
+        "avatar_url": null,
         "stats": {
           "contributions_approved": 12,
-          "verifications_done": 34
+          "verifications_done": 34,
+          "comments_published": 5
         }
       }
     }
@@ -29,6 +31,7 @@ setelah decode). Email/phone/hash/is_active tidak pernah tampil.
     }
 
 User sistem anonim boleh dibuka. Tidak ada list/cari user.
+Aktivitas terbaru: GET /users/:username/activity.
 }
 
 meta {
@@ -50,8 +53,10 @@ tests {
     expect(res.body.data.role).to.be.a("string");
     expect(res.body.data.is_verifier).to.be.a("boolean");
     expect(res.body.data.joined_at).to.be.a("string");
+    expect(res.body.data).to.have.property("avatar_url");
     expect(res.body.data.stats.contributions_approved).to.be.a("number");
     expect(res.body.data.stats.verifications_done).to.be.a("number");
+    expect(res.body.data.stats.comments_published).to.be.a("number");
     expect(res.body.data).to.not.have.property("email");
     expect(res.body.data).to.not.have.property("phone");
     expect(res.body.data).to.not.have.property("is_active");
