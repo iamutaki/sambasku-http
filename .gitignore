@@ -1,4 +1,6 @@
 # Environment Bruno selain local TIDAK di-commit (base-stack.md Section 20:
-# kredensial staging/production dikelola lokal). production.bru juga bila ada.
-staging.bru
-production.bru
+# kredensial staging/production dikelola lokal). Pola wildcard dulu, baru
+# negasi local: `production-deno.bru` / `production-render.bru` jangan
+# lolos hanya karena namanya bukan `production.bru` persis.
+environments/*.bru
+!environments/local.bru

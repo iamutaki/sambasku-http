@@ -17,6 +17,7 @@ Acuan sinkronisasi: `docs/api/api-base-stack.md` Section 20 di repo
    GUI desktop)
 2. Buka folder ini sebagai collection (File → Open Collection)
 3. Pilih environment **local** (API di `http://localhost:3000`)
+   atau salah satu environment produksi lokal (lihat di bawah)
 4. Jalankan berurutan: `Register` → `Login` → request lain
    (Login menyimpan `access_token` + `refresh_token` sebagai collection
    variable untuk request berikutnya)
@@ -95,3 +96,28 @@ Setiap penambahan/perubahan endpoint di `api/` **wajib** diikuti file
 
 Environment selain `local` (staging/production) **tidak** di-commit.
 Kredensial sungguhan dikelola lokal lewat environment Bruno.
+`.gitignore` memakai `environments/*.bru` + `!environments/local.bru`
+supaya `production-deno.bru` / `production-render.bru` tidak lolos
+hanya karena namanya bukan `production.bru` persis.
+
+### Environment produksi (lokal, tidak di-commit)
+
+Semua request memakai `{{baseUrl}}`, jadi memaksa satu tier cukup
+dengan mengganti environment di dropdown Bruno (atau `--env` di CLI).
+URL-nya bukan secret - hanya kredensial yang tidak boleh masuk git.
+Buat file di `environments/` dengan `baseUrl` berikut, salin var lain
+dari `local.bru`:
+
+| Environment | `baseUrl` | Tier |
+|---|---|---|
+| `production` | `https://api.sambasku.com` | 1 - Cloudflare Worker |
+| `production-deno` | `https://deno.sambasku.com` | 2 - Deno Deploy |
+| `production-render` | `https://render.sambasku.com` | 3 - Render (bisa tidur) |
+
+```bash
+npx @usebruno/cli run --env production-render misc/ping.bru
+```
+
+`GET /api/v1/ping` mengembalikan `host` (dari header `Host`) supaya
+bisa dipastikan request benar mendarat di tier yang dipilih. `runtime`
+saja tidak cukup: tier 2 dan 3 keduanya `node`.
