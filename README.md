@@ -48,7 +48,7 @@ auth/                     # register, login (web/mobile/google/facebook), OTP, r
 language/                 # languages + dialects (var sambas_language_id, …)
 category/                 # categories
 word/                     # CRUD admin, search, media (pronounce / gambar / contoh), WOTD
-image/                    # upload-token ImageKit + POST /images (GitHub sambasku-images)
+image/                    # upload-token ImageKit + POST /images (GitHub sambasku/images)
 users/                    # profil publik, activity, avatar
 contribution/             # antrean review: list, detail, approve, reject, correct
 search-miss/              # pencarian kosong + dismiss admin
