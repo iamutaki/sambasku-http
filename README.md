@@ -44,7 +44,7 @@ harus sinkron dengannya.
 ## Struktur
 
 ```text
-auth/                     # register, login (web/mobile/google/facebook), OTP, refresh, logout
+auth/                     # register, login (web/mobile/google/facebook), OTP, refresh, logout, hapus akun
 language/                 # languages + dialects (var sambas_language_id, …)
 category/                 # categories
 word/                     # CRUD admin, search, media (pronounce / gambar / contoh), WOTD

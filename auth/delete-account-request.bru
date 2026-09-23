@@ -1,0 +1,40 @@
+docs {
+Minta kode hapus akun lewat email. Response selalu sama, baik email
+terdaftar maupun tidak (anti-enumeration). Kode 8 karakter 0-9A-Z,
+tampilan XXXX-XXXX, berlaku 10 menit.
+
+Email di body ini tidak terdaftar supaya koleksi tidak mengirim kode
+ke user seed. Ganti dengan email sungguhan hanya saat uji manual.
+
+200:
+
+    {
+      "success": true,
+      "data": { "message": "Jika email terdaftar, kode penghapusan telah dikirim" }
+    }
+}
+
+meta {
+  name: Delete Account Request
+  seq: 15
+}
+
+post {
+  url: {{baseUrl}}/api/v1/auth/delete-account/request
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "email": "tidak-ada@example.com"
+  }
+}
+
+tests {
+  test("status 200 + pesan anti-enumeration", () => {
+    expect(res.status).to.equal(200);
+    expect(res.body.success).to.equal(true);
+    expect(res.body.data.message).to.equal("Jika email terdaftar, kode penghapusan telah dikirim");
+  });
+}
