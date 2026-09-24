@@ -1,0 +1,43 @@
+docs {
+Kontribusi gambar dari Media Explorer (URL stock eksternal).
+Tidak perlu upload ke GitHub — kirim provider + url CDN + id item.
+
+201 sukses (admin): published + is_verified true.
+}
+
+meta {
+  name: Add Word Image Stock (Pexels)
+  seq: 11.1
+}
+
+post {
+  url: {{baseUrl}}/api/v1/words/{{word_id}}/images
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+script:pre-request {
+  bru.setVar('bruno_stock_file_id', 'pexels-bruno-' + Date.now());
+}
+
+body:json {
+  {
+    "url": "https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg",
+    "provider": "pexels",
+    "provider_file_id": "{{bruno_stock_file_id}}",
+    "alt_text": "Foto: Pexels / pexels",
+    "is_primary": false
+  }
+}
+
+tests {
+  test("201 + published (stock Media Explorer)", () => {
+    expect(res.status).to.equal(201);
+    expect(res.body.data.status).to.equal('published');
+    expect(res.body.data.url).to.include('images.pexels.com');
+  });
+}

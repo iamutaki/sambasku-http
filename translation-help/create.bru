@@ -1,0 +1,53 @@
+docs {
+Kirim permintaan bantuan (pending_review). Wajib login. Minimal body
+teks atau images[]. Gambar staging ImageKit; public_url masih null
+sampai approve.
+
+200 sukses:
+
+    {
+      "success": true,
+      "data": {
+        "id": "01JD...",
+        "status": "pending_review",
+        "submitted_at": "2026-09-24T00:00:00.000Z"
+      }
+    }
+}
+
+meta {
+  name: Create Translation Help
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/api/v1/translation-helps
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "body": "Apa arti frasa ini dalam bahasa Sambas?",
+    "images": []
+  }
+}
+
+script:post-response {
+  if (res.body?.data?.id) {
+    bru.setVar("translation_help_id", res.body.data.id);
+  }
+}
+
+tests {
+  test("200 pending_review", () => {
+    expect(res.status).to.equal(200);
+    expect(res.body.success).to.equal(true);
+    expect(res.body.data.status).to.equal("pending_review");
+    expect(res.body.data.id).to.be.a("string");
+  });
+}

@@ -1,0 +1,21 @@
+meta {
+  name: Send Campaign
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/v1/admin/notification-campaigns/{{campaign_id}}/send
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+tests {
+  test("200 send", () => {
+    expect(res.status).to.equal(200);
+    expect(["sending", "scheduled", "completed"]).to.include(res.body.data.status);
+  });
+}

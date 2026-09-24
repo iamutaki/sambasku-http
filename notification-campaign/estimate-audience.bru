@@ -1,0 +1,27 @@
+meta {
+  name: Estimate Audience
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/api/v1/admin/notification-campaigns/estimate
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "audience_type": "all"
+  }
+}
+
+tests {
+  test("200 estimate", () => {
+    expect(res.status).to.equal(200);
+    expect(res.body.data.users_with_device).to.be.a("number");
+  });
+}

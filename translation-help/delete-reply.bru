@@ -1,0 +1,26 @@
+docs {
+Hapus balasan sendiri → status deleted_by_author. 403 jika bukan penulis.
+}
+
+meta {
+  name: Delete Own Reply
+  seq: 7
+}
+
+delete {
+  url: {{baseUrl}}/api/v1/translation-helps/replies/{{translation_help_reply_id}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+tests {
+  test("200 deleted", () => {
+    expect(res.status).to.equal(200);
+    expect(res.body.success).to.equal(true);
+    expect(res.body.data).to.equal(null);
+  });
+}

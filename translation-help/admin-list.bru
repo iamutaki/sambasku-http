@@ -1,0 +1,33 @@
+docs {
+Antrean moderasi admin (admin|root|reviewer|editor). Filter status
+opsional. Detail staging ImageKit terlihat di admin (url + provider_file_id).
+}
+
+meta {
+  name: Admin List Translation Helps
+  seq: 8
+}
+
+get {
+  url: {{baseUrl}}/api/v1/admin/translation-helps?status=pending_review&limit=20
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+script:post-response {
+  const items = res.body.data || [];
+  if (items[0]) bru.setVar("translation_help_id", items[0].id);
+}
+
+tests {
+  test("200 admin list", () => {
+    expect(res.status).to.equal(200);
+    expect(res.body.success).to.equal(true);
+    expect(res.body.data).to.be.an("array");
+    expect(res.body.meta).to.have.property("has_more");
+  });
+}

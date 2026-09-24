@@ -1,0 +1,33 @@
+docs {
+Tolak pending. Note wajib. Hapus gambar ImageKit best-effort.
+}
+
+meta {
+  name: Admin Reject
+  seq: 10
+}
+
+post {
+  url: {{baseUrl}}/api/v1/admin/translation-helps/{{translation_help_id}}/reject
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "note": "Gambar tidak jelas / di luar topik."
+  }
+}
+
+tests {
+  test("200 rejected", () => {
+    expect(res.status).to.equal(200);
+    expect(res.body.success).to.equal(true);
+    expect(res.body.data.status).to.equal("rejected");
+    expect(res.body.data.rejection_note).to.be.a("string");
+  });
+}

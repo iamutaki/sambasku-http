@@ -1,0 +1,30 @@
+meta {
+  name: Create Campaign Draft All
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/v1/admin/notification-campaigns
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "title": "Kata baru minggu ini",
+    "body": "Cek entri Sambas terbaru di SambasKu.",
+    "audience_type": "all",
+    "deep_link_kind": "none"
+  }
+}
+
+tests {
+  test("201 draft", () => {
+    expect(res.status).to.equal(201);
+    expect(res.body.data.status).to.equal("draft");
+  });
+}

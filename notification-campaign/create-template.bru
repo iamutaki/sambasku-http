@@ -1,0 +1,30 @@
+meta {
+  name: Create Notification Template
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/v1/admin/notification-templates
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "name": "Update kamus",
+    "title": "Kata baru minggu ini",
+    "body": "Cek entri Sambas terbaru di SambasKu.",
+    "deep_link_kind": "none"
+  }
+}
+
+tests {
+  test("201 template", () => {
+    expect(res.status).to.equal(201);
+    expect(res.body.data.id).to.be.a("string");
+  });
+}

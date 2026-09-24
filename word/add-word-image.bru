@@ -41,7 +41,7 @@ auth:bearer {
 }
 
 script:pre-request {
-  // file id unik per run - hindari tabrakan unique (provider, provider_file_id)
+  // file id unik per run - unique (word_id, provider, provider_file_id)
   bru.setVar('bruno_media_file_id', 'bruno-' + Date.now());
 }
 

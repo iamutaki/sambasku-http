@@ -56,9 +56,11 @@ search-miss/              # pencarian kosong + dismiss admin
 bookmark/                 # toggle + daftar bookmark
 vote/                     # toggle, counts, my, history
 comment/                  # publik + moderasi admin + blocklist
+translation-help/         # bantuan terjemahan publik + user + admin
 verifier-applications/    # pengajuan + keputusan admin
 share/                    # GET share/backgrounds (proxy gambar/video publik)
 notification/             # inbox + mark read
+notification-campaign/    # admin template + campaign broadcast
 bug-report/               # submit + admin resolve + upload-token
 device/                   # registrasi device / FCM
 lemma-definition/         # definisi lemma terkait

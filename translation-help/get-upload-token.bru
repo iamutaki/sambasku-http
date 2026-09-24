@@ -1,0 +1,29 @@
+docs {
+Kredensial direct-upload ImageKit, folder wajib /translation-helps
+(32-api-translation-helps.md). Login required. Folder lain → 400.
+}
+
+meta {
+  name: Get Upload Token
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/api/v1/translation-helps/upload-token?folder=/translation-helps
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+tests {
+  test("200 + upload credentials", () => {
+    expect(res.status).to.equal(200);
+    expect(res.body.success).to.equal(true);
+    expect(res.body.data).to.have.property("token");
+    expect(res.body.data).to.have.property("expire");
+    expect(res.body.data).to.have.property("signature");
+  });
+}

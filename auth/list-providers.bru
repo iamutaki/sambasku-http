@@ -1,0 +1,25 @@
+docs {
+GET /api/v1/auth/providers — daftar OAuth yang terhubung.
+}
+
+meta {
+  name: List Auth Providers
+  seq: 10
+}
+
+get {
+  url: {{baseUrl}}/api/v1/auth/providers
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+tests {
+  test("200 + providers array", () => {
+    expect(res.status).to.equal(200);
+    expect(res.body.data.providers).to.be.an("array");
+  });
+}

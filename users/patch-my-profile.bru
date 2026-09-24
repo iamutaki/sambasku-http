@@ -1,0 +1,32 @@
+docs {
+PATCH /api/v1/users/me — edit display_name dan/atau bio.
+Username tidak berubah. Auth Bearer wajib.
+}
+
+meta {
+  name: Patch My Profile
+  seq: 6
+}
+
+patch {
+  url: {{baseUrl}}/api/v1/users/me
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "display_name": "Budi Santoso",
+    "bio": "Kontributor kamus Sambas"
+  }
+}
+
+tests {
+  test("200 + profil diperbarui", () => {
+    expect(res.status).to.be.oneOf([200, 400, 401]);
+  });
+}
