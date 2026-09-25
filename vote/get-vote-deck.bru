@@ -1,0 +1,30 @@
+meta {
+  name: Get Vote Deck
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/v1/votes/deck?limit=10
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+params:query {
+  limit: 10
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  test("envelope success + data array", function() {
+    expect(res.body.success).to.equal(true);
+    expect(res.body.data).to.be.an("array");
+    expect(res.body.meta).to.have.property("has_more");
+  });
+}
