@@ -1,7 +1,9 @@
 docs {
 Detail bantuan terjemahan published + replies (32-api-translation-helps.md).
-Tanpa auth untuk published. Reply menyertakan is_verifier + is_pinned.
+Tanpa auth untuk published. Help menyertakan upvotes (upvote-only).
+Reply menyertakan is_verifier + is_pinned + upvotes/downvotes.
 Body reply null jika taken_down / deleted_by_author.
+Urutan reply: pinned → net score desc → created_at desc.
 
 Set {{translation_help_id}} dari list-published atau isi manual.
 }
@@ -22,10 +24,13 @@ tests {
     expect(res.status).to.equal(200);
     expect(res.body.success).to.equal(true);
     expect(res.body.data.status).to.equal("published");
+    expect(res.body.data).to.have.property("upvotes");
     expect(res.body.data.replies).to.be.an("array");
     for (const r of res.body.data.replies) {
       expect(r).to.have.property("is_verifier");
       expect(r).to.have.property("is_pinned");
+      expect(r).to.have.property("upvotes");
+      expect(r).to.have.property("downvotes");
       expect(["published", "taken_down", "deleted_by_author"]).to.include(r.status);
       if (r.status === "published") {
         expect(r.body).to.be.a("string");

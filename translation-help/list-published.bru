@@ -1,7 +1,7 @@
 docs {
 Feed bantuan terjemahan yang sudah tayang (32-api-translation-helps.md).
-Tanpa auth. Cursor pagination. Gambar publik hanya public_url (jsDelivr);
-URL ImageKit staging tidak pernah muncul di wire publik.
+Tanpa auth. Cursor pagination. Query sort=latest|popular.
+Gambar publik hanya public_url (jsDelivr).
 
 200 sukses:
 
@@ -16,6 +16,7 @@ URL ImageKit staging tidak pernah muncul di wire publik.
           "images": [{ "public_url": "https://cdn.jsdelivr.net/..." }],
           "status": "published",
           "pinned_reply_id": null,
+          "upvotes": 0,
           "created_at": "2026-09-24T00:00:00.000Z"
         }
       ],
@@ -29,7 +30,7 @@ meta {
 }
 
 get {
-  url: {{baseUrl}}/api/v1/translation-helps?limit=20
+  url: {{baseUrl}}/api/v1/translation-helps?limit=20&sort=latest
   body: none
   auth: none
 }
@@ -48,6 +49,7 @@ tests {
     expect(res.body.meta).to.have.property("next_cursor");
     for (const item of res.body.data) {
       expect(item.status).to.equal("published");
+      expect(item).to.have.property("upvotes");
       expect(item.images).to.be.an("array");
       for (const img of item.images) {
         expect(img).to.have.property("public_url");
